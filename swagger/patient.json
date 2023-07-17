@@ -1,0 +1,524 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Swagger Petstore - OpenAPI 3.0",
+    "description": "This is a sample Pet Store Server based on the OpenAPI 3.0 specification.  You can find out more about\nSwagger at [https://swagger.io](https://swagger.io). In the third iteration of the pet store, we've switched to the design first approach!\nYou can now help us improve the API whether it's by making changes to the definition itself or to the code.\nThat way, with time, we can improve the API in general, and expose some of the new features in OAS3.\n\n_If you're looking for the Swagger 2.0/OAS 2.0 version of Petstore, then click [here](                                                                          ). Alternatively, you can load via the `Edit > Load Petstore OAS 2.0` menu option!_\n\nSome useful links:\n- [The Pet Store repository](https://github.com/swagger-api/swagger-petstore)\n- [The source API definition for the Pet Store](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.11"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:2580"
+    }
+  ],
+  "tags": [
+    {
+      "name": "patient",
+      "description": "Everything about the patients",
+      "externalDocs": {
+        "description": "Find out more",
+        "url": "http://swagger.io"
+      }
+    }
+  ],
+  "paths": {
+    "/patient/delete/": {
+      "post": {
+        "tags": [
+          "patient"
+        ],
+        "summary": "Deletes a patient",
+        "description": "delete a patient",
+        "operationId": "deletePatient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeletePatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeletePatientResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:patients",
+              "read:patients"
+            ]
+          }
+        ]
+      }
+    },
+    "/patient/insertPatient/": {
+      "post": {
+        "tags": [
+          "patient"
+        ],
+        "summary": "insert a patient",
+        "description": "insert a patient",
+        "operationId": "insertPatient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsertPatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsertPatientResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "error"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:patients",
+              "read:patients"
+            ]
+          }
+        ]
+      }
+    },
+    "/patient/basicupdate": {
+      "post": {
+        "tags": [
+          "patient"
+        ],
+        "summary": "Update a patient",
+        "description": "Update a patient by value",
+        "operationId": "basicupdate",
+        "requestBody": {
+          "description": "Update apatient",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/update"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/update"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/update"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/update"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "patient not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:patients",
+              "read:patients"
+            ]
+          }
+        ]
+      }
+    },
+    "/patient/findPatientesByFeature/{featureName}/{featureValue}": {
+      "get": {
+        "tags": [
+          "patient"
+        ],
+        "summary": "read a patient by value",
+        "description": "read a patient by value",
+        "operationId": "findPatientesByFeature",
+        "parameters": [
+          {
+            "name": "featureName",
+            "in": "path",
+            "description": "featureName of patient to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "featureValue",
+            "in": "path",
+            "description": "featureValue of patient to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/read"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied"
+          },
+          "404": {
+            "description": "patient not found"
+          },
+          "405": {
+            "description": "Validation exception"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:patients",
+              "read:patients"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DeletePatient": {
+        "type": "object",
+        "properties": {
+          "ID": {
+            "type": "string",
+            "example": "451236987"
+          },
+          "status": {
+            "type": "string",
+            "description": "Patient Status",
+            "example": "embeded",
+            "enum": [
+              "deleted",
+              "embeded"
+            ]
+          }
+        },
+        "xml": {
+          "name": "patient"
+        }
+      },
+      "DeletePatientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "102345679"
+          },
+          "name": {
+            "type": "string",
+            "example": "chana"
+          },
+          "medicalDocsDate": {
+            "type": "date",
+            "example": "12/03/23"
+          },
+          "selectedGenders": {
+            "type": "string",
+            "example": "נשים",
+            "enum": [
+              "גברים",
+              "נשים",
+              "מעורב"
+            ]
+          },
+          "treatmentLevel": {
+            "type": "string",
+            "example": "בינונית",
+            "enum": [
+              "גבוהה",
+              "בינונית",
+              "נמוכה"
+            ]
+          },
+          "treatmentPreference": {
+            "type": "string",
+            "example": "גבוהה",
+            "enum": [
+              "גבוהה",
+              "בינונית",
+              "נמוכה"
+            ]
+          },
+          "evaluated": {
+            "type": "boolean",
+            "example": true
+          },
+          "evaluationDate": {
+            "type": "date",
+            "example": "12/08/22"
+          },
+          "swimmingPools": {
+            "type": "Array",
+            "example": [
+              "A",
+              "B"
+            ]
+          },
+          "teachers": {
+            "type": "Array",
+            "example": [
+              {
+                "name": "sara",
+                "desired": true
+              }
+            ]
+          },
+          "days": {
+            "type": "Array",
+            "example": [
+              {
+                "day": "Sunday",
+                "start": "12:00",
+                "end": "13:00"
+              },
+              {
+                "day": "Sunday",
+                "start": "14:30",
+                "end": "16:30"
+              }
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "the patient is..."
+          }
+        },
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "InsertPatient": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "102345679"
+          },
+          "name": {
+            "type": "string",
+            "example": "chana"
+          },
+          "medicalDocsDate": {
+            "type": "date",
+            "example": "12/03/23"
+          },
+          "selectedGenders": {
+            "type": "string",
+            "example": "נשים",
+            "enum": [
+              "גברים",
+              "נשים",
+              "מעורב"
+            ]
+          },
+          "treatmentLevel": {
+            "type": "string",
+            "example": "בינונית",
+            "enum": [
+              "גבוהה",
+              "בינונית",
+              "נמוכה"
+            ]
+          },
+          "treatmentPreference": {
+            "type": "string",
+            "example": "גבוהה",
+            "enum": [
+              "גבוהה",
+              "בינונית",
+              "נמוכה"
+            ]
+          },
+          "evaluated": {
+            "type": "boolean",
+            "example": true
+          },
+          "evaluationDate": {
+            "type": "date",
+            "example": "12/08/22"
+          },
+          "swimmingPools": {
+            "type": "Array",
+            "example": [
+              "A",
+              "B"
+            ]
+          },
+          "teachers": {
+            "type": "Array",
+            "example": [
+              {
+                "name": "sara",
+                "desired": true
+              }
+            ]
+          },
+          "days": {
+            "type": "Array",
+            "example": [
+              {
+                "day": "Sunday",
+                "start": "12:20",
+                "end": "13:40"
+              },
+              {
+                "day": "Sunday",
+                "start": "14:45",
+                "end": "16:45"
+              }
+            ]
+          },
+          "remarks": {
+            "type": "string",
+            "example": "the patient is..."
+          }
+        },
+        "xml": {
+          "name": "patient"
+        }
+      },
+      "InsertPatientResponse": {
+        "type": "boolean",
+        "example": true,
+        "xml": {
+          "name": "##default"
+        }
+      },
+      "update": {
+        "type": "object",
+        "properties": {
+          "obj1": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "example": "1234"
+              }
+            }
+          },
+          "obj2": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "ruti"
+              }
+            }
+          },
+          "complete": {
+            "type": "boolean"
+          }
+        },
+        "xml": {
+          "name": "order"
+        }
+      }
+    },
+    "requestBodies": {
+      "DeletePatient": {
+        "description": "Patient object that needs to be deleted to the store",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DeletePatient"
+            },
+            "securitySchemes": {
+              "petstore_auth": {
+                "type": "oauth2",
+                "flows": {
+                  "implicit": {
+                    "authorizationUrl": null,
+                    "scopes": {
+                      "write:pets": "modify pets in your account",
+                      "read:pets": "read your pets"
+                    }
+                  }
+                }
+              },
+              "api_key": {
+                "type": "apiKey",
+                "name": "api_key",
+                "in": "header"
+              }
+            }
+          }
+        }
+      },
+      "InsertPatient": {
+        "description": "Patient object that needs to be deleted to the store",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InsertPatient"
+            }
+          }
+        }
+      }
+    }
+  }
+}

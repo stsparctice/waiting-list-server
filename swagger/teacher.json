@@ -1,0 +1,559 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Swagger PetTeacherstore - OpenAPI 3.0",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.11"
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:2580"
+    }
+  ],
+  "tags": [
+    {
+      "name": "teachers",
+      "description": "Operations about teachers"
+    },
+    {
+      "name": "teachers Schedule",
+      "description": "Operations about schedule"
+    }
+  ],
+  "paths": {
+    "/teachers/insertTeacher": {
+      "post": {
+        "tags": [
+          "teachers"
+        ],
+        "summary": "Add a new teacher to the Mongo",
+        "description": "Add a new teacher to the Mongo",
+        "operationId": "insertTeacher",
+        "requestBody": {
+          "description": "Create a new teacher in the Mongo",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Teacher"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful create"
+          },
+          "405": {
+            "description": "Invalid input"
+          },
+          "404": {
+            "description": "collection not found"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teachers/deleteTeacher": {
+      "post": {
+        "tags": [
+          "teachers"
+        ],
+        "summary": "Remove teacher from the Mongo",
+        "description": "Remove teacher from the Mongo",
+        "operationId": "deleteTeacher",
+        "requestBody": {
+          "description": "Remove techer (from techers , schedule collections) and insert teacher to formerTeachers in sql",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deleteTeacher"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "delete Successfuly ",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teachers/updateTeacher": {
+      "post": {
+        "tags": [
+          "teachers"
+        ],
+        "summary": "Update teacher details in mongo ",
+        "description": "Update teacher details in mongo",
+        "operationId": "updateTeacher",
+        "requestBody": {
+          "description": "update required teacher from Mongo",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateTeacher"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Update Successfuly ",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teachers/findTeacher": {
+      "get": {
+        "tags": [
+          "teachers"
+        ],
+        "summary": "get teachers from Mongo",
+        "description": "get teachers from Mongo",
+        "operationId": "findTeacher",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "description": "teacherName",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "phone",
+            "in": "query",
+            "description": "phone",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful create",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Teacher"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teachers/findDisabledTeachers": {
+      "get": {
+        "tags": [
+          "teachers"
+        ],
+        "summary": "get disabled teachers from sql",
+        "description": "get disabled teachers from sql",
+        "operationId": "findDisabledTeacher",
+        "responses": {
+          "200": {
+            "description": "Successful create",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/findTeacher"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teacher_schedule/insertTeacherSchedule": {
+      "post": {
+        "tags": [
+          "teachers Schedule"
+        ],
+        "summary": "Add a new schedule of teacher to the Mongo",
+        "description": "Add a new schedule of teacher to the Mongo",
+        "operationId": "insertSchedule",
+        "requestBody": {
+          "description": "Add a new schedule of teacher to the Mongo",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/schedule"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": " Successful insert schedule",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teacher_schedule/updateTeacherSchedule": {
+      "post": {
+        "tags": [
+          "teachers Schedule"
+        ],
+        "summary": "Update schedule of teacher details in mongo",
+        "description": "Update schedule of teacher details in mongo",
+        "operationId": "updateTeacherSchedule",
+        "requestBody": {
+          "description": "Update schedule of teacher details in mongo",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateSchedule"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": " Successful update schedule",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teacher_schedule/findTeachersSchedule": {
+      "get": {
+        "tags": [
+          "teachers Schedule"
+        ],
+        "summary": "filter schedules by query",
+        "description": "filter schedules by query",
+        "operationId": "findSchedules",
+        "parameters": [
+          {
+            "name": "schedule.day",
+            "in": "query",
+            "description": "find teacher by query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": " Successful update schedule",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    },
+    "/teacher_schedule/findTeacherScheduleToSpecificTeacher/{teacherName}": {
+      "get": {
+        "tags": [
+          "teachers Schedule"
+        ],
+        "summary": "filter schedules by query",
+        "description": "filter schedules by query",
+        "operationId": "findSchedulesForTeacher",
+        "parameters": [
+          {
+            "name": "teacherName",
+            "in": "path",
+            "description": "TeacherName to find schedule",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": " Successful update schedule",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "405": {
+            "description": "Invalid input"
+          }
+        },
+        "security": [
+          {
+            "petstore_auth": [
+              "write:pets",
+              "read:pets"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Teacher": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0556767676"
+          },
+          "email": {
+            "type": "string",
+            "example": "sh@gamil.com"
+          },
+          "annotation": {
+            "type": "string",
+            "example": "לא בשעות הבוקר"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "city": {
+                "type": "string",
+                "example": "אשדוד"
+              },
+              "street": {
+                "type": "string",
+                "example": "רבא"
+              },
+              "zip": {
+                "type": "string",
+                "example": "92"
+              }
+            }
+          },
+          "genders": {
+            "type": "array",
+            "example": [
+              "בנים"
+            ]
+          },
+          "pools": {
+            "type": "array",
+            "example": [
+              "אשדוד"
+            ]
+          },
+          "levels": {
+            "type": "array",
+            "example": [
+              "גבוהה"
+            ]
+          }
+        },
+        "xml": {
+          "name": "order"
+        }
+      },
+      "deleteTeacher": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          }
+        }
+      },
+      "updateTeacher": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          },
+          "update": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "example": "משה כהן"
+              }
+            }
+          }
+        }
+      },
+      "findTeacher": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          }
+        },
+        "xml": {
+          "name": "order"
+        }
+      },
+      "schedule": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          },
+          "schedule": {
+            "type": "array",
+            "$ref": "#/components/schemas/scheduleOfDay"
+          }
+        }
+      },
+      "updateSchedule": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "ישראל ישראלי"
+          },
+          "update": {
+            "type":"object",
+            "properties":{
+              "schedule": {
+                "type": "array",
+                "$ref": "#/components/schemas/scheduleOfDay"
+              }
+
+            }
+          }
+        }
+      },
+      "findTeacherSchedule": {
+        "type": "object",
+        "properties": {
+          "Schedule.swimmingPool": {
+            "type": "string",
+            "example": "אשדוד"
+          }
+        }
+      },
+      "scheduleOfDay": {
+        "type": "array",
+        "example": [
+          {
+            "day": "ראשון",
+            "hours": [
+              {
+                "startHour": "09:00",
+                "endHour": "12:30",
+                "poolName": "אשדוד",
+                "gender": "גברים"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

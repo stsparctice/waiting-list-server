@@ -1,0 +1,283 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Simple Todos API",
+    "description": "A simple todos API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "John doe",
+      "email": "john@web.com",
+      "url": "web.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:2580",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Todo CRUD operations"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "addGender": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "genderName",
+            "example": "מעורב"
+          },
+          "sex": {
+            "type": "string",
+            "description": "sex",
+            "example": "זכר"
+          },
+          "mmaxAge": {
+            "type": "string",
+            "description": "the male's max age",
+            "example": "9"
+          },
+          "fmaxAge": {
+            "type": "string",
+            "description": "the female's max age",
+            "example": "120"
+          },
+          "genderColor": {
+            "type": "string",
+            "description": "genderColor",
+            "example": "green"
+          }
+        }
+      },
+      "deleteGenders": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "gender name",
+            "example": "מעורב"
+          }
+        }
+      },
+      "updateGenders": {
+        "type": "object",
+        "properties": {
+          "oldName": {
+            "type": "string",
+            "description": "the old gender name",
+            "example": "מעורב"
+          },
+          "name": {
+            "type": "string",
+            "description": "the new gender name",
+            "example": "גברים"
+          },
+          "sex": {
+            "type": "string",
+            "description": "sex",
+            "example": "זכר"
+          },
+          "mmaxAge": {
+            "type": "string",
+            "description": "the male's max age", 
+            "example": "9"
+          },
+          "fmaxAge": {
+            "type": "string",
+            "description": "the female's max age",
+            "example": "120"
+          },
+          "genderColor": {
+            "type": "string",
+            "description": "genderColor",
+            "example": "blue"
+          }
+        }
+      },
+      "findGender": {
+        "name": {
+          "type": "string",
+          "description": "find Gender",
+          "exemple": "pool"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/gender/add": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "add Gender",
+        "operationId": "addGender",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addGender"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "fall",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/gender/find/{name}": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "find Gender",
+        "operationId": "findGender",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/findGender"
+            },
+            "required": true,
+            "description": "Table name"
+          }
+        ],
+        "requestBody": {},
+        "responses": {
+          "200": {
+            "description": "fall",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/gender/getAll": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "get all the genders",
+        "operationId": "getAllGenders",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "get all genders",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/gender/update": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "update the genders details",
+        "operationId": "updateGenders",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateGenders"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "gen",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/gender/delete": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete the genders",
+        "operationId": "deleteGenders",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deleteGenders"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "gen",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}

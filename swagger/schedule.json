@@ -1,0 +1,606 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Simple Todos API",
+    "description": "A simple todos API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "John doe",
+      "email": "john@web.com",
+      "url": "web.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:2580",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Todo CRUD operations"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "addHour": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "the day that you want to insert hour into his schedule",
+            "example": "ראשון"
+          },
+          "startHour": {
+            "type": "string",
+            "description": "the start hour that you want to insert to the schedule for this day.",
+            "example": "09:00"
+          },
+          "endHour": {
+            "type": "string",
+            "description": "the end hour that you want to insert to the schedule for this day.",
+            "example": "10:00"
+          },
+          "gender": {
+            "type": "string",
+            "description": "the id of the gender - from the mongo",
+            "example": "מעורב"
+          }
+        }
+      },
+      "addActiveHour": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "the day that you want to insert hour into his schedule",
+            "example": "ראשון"
+          },
+          "startHour": {
+            "type": "string",
+            "description": "the start hour that you want to insert to the schedule for this day.",
+            "example": "09:00"
+          },
+          "endHour": {
+            "type": "string",
+            "description": "the end hour that you want to insert to the schedule for this day.",
+            "example": "10:00"
+          }
+        }
+      },
+      "deleteHour": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "the day that you want to delete hour in his schedule.",
+            "example": "ראשון"
+          },
+          "startHour": {
+            "type": "string",
+            "description": "the start hour that you want to delete from the schedule in this day.",
+            "example": "11:00"
+          }
+        }
+      },
+      "updateHour": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "שם הבריכה",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "היום שבו רוצים לעדכן שעה",
+            "example": "ראשון"
+          },
+          "old": {
+            "type": "object",
+            "properties": {
+              "startHour": {
+                "type": "string",
+                "description": "שעת ההתחלה של יחידת הזמן שאותה רוצים לעדכן",
+                "example": "11:00"
+              }
+            }
+          },
+          "new": {
+            "type": "object",
+            "properties": {
+              "startHour": {
+                "type": "string",
+                "description": "שעת ההתחלה המעודכנת",
+                "example": "10:00"
+              },
+              "endHour": {
+                "type": "string",
+                "description": "שעת הסיום המעודכנת",
+                "example": "10:30"
+              }
+            }
+          }
+        }
+      },
+      "getHour": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "שם הבריכה",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "היום שממנו רוצים לקבל יחידת זמן",
+            "example": "ראשון"
+          },
+          "startHour": {
+            "type": "string",
+            "description": "שעת ההתחלה של יחידת הזמן שאותה רוצים לקבל",
+            "example": "11:00"
+          }
+        }
+      },
+      "deleteDay": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "שם הבריכה",
+            "example": "ashdod"
+          },
+          "day": {
+            "type": "string",
+            "description": "היום שאותו רוצים למחוק מהמערכת",
+            "example": "monday"
+          }
+        }
+      },
+      "poolName": {
+        "type": "string",
+        "description": "poolName",
+        "example": "ashdod"
+      },
+      "day": {
+        "type": "string",
+        "description": "dayToSearch",
+        "example": "ראשון"
+      }
+    }
+  },
+  "paths": {
+    "/schedule/getAllActiveHours/{poolName}": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "getAllActiveHours",
+        "parameters": [
+          {
+            "name": "poolName",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/poolName"
+            },
+            "required": true,
+            "description": "pool - name"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/getAllActiveHoursByDay?poolName={poolName}&day={day}": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "getAllActiveHoursByDay",
+        "parameters": [
+          {
+            "name": "poolName",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/poolName"
+            },
+            "required": true,
+            "description": "pool - name"
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/day"
+            },
+            "required": true,
+            "description": "desired day"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {}
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/getActiveHour": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "getActiveHour",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/getHour": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "getAllHoursByDay",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/getHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/getAllHoursByDay?poolName={poolName}&day={day}": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [
+          {
+            "name": "poolName",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/poolName"
+            },
+            "required": true,
+            "description": "pool - name"
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/day"
+            },
+            "required": true,
+            "description": "desired day"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/addActiveHour": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "add active hour",
+        "operationId": "addActiveHour",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addActiveHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "added",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/addHour": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/updateActiveHourByDay": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/updateHourByDay": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updateHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/deleteDay": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete active hour",
+        "operationId": "deleteActiveHour",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deleteDay"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/deleteActiveHourByDay": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "update pool",
+        "operationId": "updatePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deleteHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/schedule/deleteHourByDay": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deleteHour"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}

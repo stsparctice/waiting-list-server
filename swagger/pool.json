@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Simple Todos API",
+    "description": "A simple todos API",
+    "version": "1.0.0",
+    "contact": {
+      "name": "John doe",
+      "email": "john@web.com",
+      "url": "web.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:2580",
+      "description": "Local server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Todo CRUD operations"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "addPool": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "buot"
+          },
+          "poolColor": {
+            "type": "string",
+            "description": "the pool color",
+            "example": "red"
+          },
+          "poolAddress": {
+            "type": "string",
+            "description": "the pool address",
+            "example": "ashdod"
+          }
+        }
+      },
+      "deletePool": {
+        "type": "object",
+        "properties": {
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "buot"
+          }
+        }
+      },
+      "updatePool": {
+        "type": "object",
+        "properties": {
+          "oldPoolName": {
+            "type": "string",
+            "description": "the old pool name",
+            "example": "buot"
+          },
+          "poolName": {
+            "type": "string",
+            "description": "the pool name",
+            "example": "buot"
+          },
+          "poolColor": {
+            "type": "string",
+            "description": "the pool color",
+            "example": "red"
+          },
+          "address": {
+            "type": "string",
+            "description": "the pool address",
+            "example": "ashdod"
+          }
+        }
+      },
+      "poolName": {
+        "type": "string",
+        "description": "the pool name",
+        "example": "buot"
+      }
+    }
+  },
+  "paths": {
+    "/pool/add": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "add pool",
+        "operationId": "addPool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/addPool"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "added",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/pool/find/{poolName}": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "find pool",
+        "operationId": "findPool",
+        "parameters": [
+          {
+            "name": "poolName",
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/poolName"
+            },
+            "required": true,
+            "description": "A single todo poolName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "try",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/pool/getAll": {
+      "get": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "get all true pools",
+        "operationId": "getAllPools",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "pools",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/pool/update": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "update pool",
+        "operationId": "updatePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updatePool"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "try"
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+    "/pool/delete": {
+      "post": {
+        "tags": [
+          "Todo CRUD operations"
+        ],
+        "description": "delete pool",
+        "operationId": "deletePool",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/deletePool"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "pools",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "404": {
+            "description": "not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    }
+  }
+}
