@@ -3,52 +3,65 @@ const express = require('express');
 const router = require('express').Router()
 const { add, update, find, deleted } = require('../modules/pool')
 
+//insert
+
 router.post('/add', express.json(), async (req, res) => {
     try {
-        let ans = await add(req.body.poolName, req.body.poolColor, req.body.poolAddress,new Date())
-        res.status(200).send(ans.data)
+        let ans = await add(req.body,new Date())
+        res.status(ans.status).send(ans)
     }
     catch (error) {
-        res.status(500).send(error)
+        res.status(500).send(error.message)
     }
 })
-router.get('/find/:poolName', async (req, res) => {
+
+//read
+
+router.post('/find', express.json(), async (req, res) => {
     try {
-        let ans = await find({ poolName: req.params.poolName })
-        res.status(200).send(ans)
+        let ans = await find(req.body,{project:req.body.project})
+        res.status(ans.status).send(ans)
     }
     catch (error) {
-        res.status(500).send(error)
+        res.status(500).send(error.message)
 
     }
 })
-router.get('/getAll',  async (req, res) => {
+
+//readAll
+
+router.get('/getAll',express.json(), async (req, res) => {
     try {
         let ans = await find({ disabled: { $exists: false } },{project:{schedule:0}})
-        res.status(200).send(ans)
+        res.status(ans.status).send(ans)
     }
     catch (error) {
-        res.status(500).send(error)
+        res.status(500).send(error.message)
 
     }
 })
+
+//update
+
 router.post('/update', express.json(), async (req, res) => {
     try {
-        let ans = await update(req.body.oldPoolName, req.body.poolName, req.body.poolColor, req.body.poolAddress)
-        res.status(200).send(ans)
+        let ans = await update(req.body)
+        res.status(ans.status).send(ans)
     }
     catch (error) {
-        res.status(404).send(error)
+        res.status(500).send(error.message)
 
     }
 })
+//delete
+
 router.post('/delete', express.json(), async (req, res) => {
     try {
-        let ans = await deleted(req.body.poolName)
-        res.status(200).send(ans)
+        let ans = await deleted(req.body)
+        res.status(ans.status).send(ans)
     }
     catch(error){
-        res.status(404).send(error)
+        res.status(500).send(error.message)
 
     }
 })
