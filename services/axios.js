@@ -3,7 +3,7 @@ const axios = require('axios');
 const { DB_SERVER_HOST, DB_SERVER_PORT } = process.env
 
 const dbServer = axios.create({
-    baseURL: `http://${DB_SERVER_HOST}:${DB_SERVER_PORT}`
+    baseURL: `http://${DB_SERVER_HOST}:${DB_SERVER_PORT}/wl`
 })
 
 
