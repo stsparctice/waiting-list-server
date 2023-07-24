@@ -37,11 +37,11 @@ async function readDetails(id) {
             condition: `id='${id}'`
         })
         
-        ans.data.medProb = medProb.data.MedProb
-        ans.data.priceList = priceList.data.Name
-        console.log('ans', ans.data);
-        if (ans.data.Name && ans.data['Family Name'] && ans.data.Birthdate != 'no date')
-            return ans.data
+        ans.data[0].medProb = medProb.data.MedProb
+        ans.data[0].priceList = priceList.data.Name
+        // console.log('ans', ans.data);
+        if (ans.data[0].Name && ans.data[0]['Family Name'] && ans.data[0].Birthdate != 'no date')
+            return ans.data[0]
         return { error: 'one or more details are missing' }
     }
     catch (error) {
