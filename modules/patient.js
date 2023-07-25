@@ -2,7 +2,7 @@ require('dotenv').config();
 const { getData, postData, dbServer } = require('../services/axios')
 
 async function basicupdate(query1 = {}, update) {
-    const response = await postData(dbServer, '/crud_db/update', { entity: 'Patients', filter: query1, update: { $set: update } })
+    const response = await postData(dbServer, '/crud_db//update', { entity: 'Patients', filter: query1, update: { $set: update } })
     return response;
 }
 

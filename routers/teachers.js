@@ -1,12 +1,17 @@
 const express = require('express')
 const router = express.Router()
-const { deleteTeacher, insertTeacher, findTeacher, updateTeacher, findDisabledTeachers } = require('../modules/teachers')
+const { deleteTeacher, insertTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers } = require('../modules/teachers')
 
 // insert  //
 router.post('/insertTeacher', express.json(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
-        res.status(ans.status).send(ans.data)
+        if (ans) {
+            res.status(200).send(ans.data)
+        }
+        else {
+            res.status(500).send({ message: 'no create' })
+        }
     }
     catch (error) {
         res.status(500).send(error.message)
@@ -17,7 +22,26 @@ router.post('/insertTeacher', express.json(), async (req, res) => {
 router.post('/deleteTeacher', express.json(), async (req, res) => {
     try {
         const ans = await deleteTeacher(req.body);
-        res.status(ans.status).send(ans.data)
+        if (ans)
+            res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'no delete' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+//update //
+router.post('/updateTeacher', express.json(), async (req, res) => {
+    try {
+        const ans = await updateTeacher(req.body)
+        if (ans) {
+            res.status(ans.status).send(ans.data)
+        }
+        else {
+            res.status(500).send({ message: 'no update' })
+        }
     }
     catch (error) {
         res.status(500).send(error.message)
@@ -25,36 +49,54 @@ router.post('/deleteTeacher', express.json(), async (req, res) => {
 })
 
 // read //
-router.get('/findTeacher', async (req, res) => {
+router.get('/findOneTeacher', async (req, res) => {
     try {
-        const ans = await findTeacher(req.query)
-        res.status(ans.status).send(ans.data)
-    }
-    catch (error) {
-        res.status(500).send(error.message)
-    }
-})
-router.post('/findTeacherByFilter', express.json(), async (req, res) => {
-    const ans = await findTeacher({ $or: req.body.filter })
-    res.send(ans)
-})
-
-//update //
-router.post('/updateTeacher', express.json(), async (req, res) => {
-    try {
-        const ans = await updateTeacher({ name: req.body.name }, req.body.update)
-        res.status(ans.status).send(ans.data)
+        const ans = await findOneTeacher(req.query)
+        if (ans)
+            res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'not found' })
     }
     catch (error) {
         res.status(500).send(error.message)
     }
 })
 
-//read from sql//
-router.get('/findDisabledTeachers', async (req, res) => {
+router.get('/findAllTeachers', async (req, res) => {
     try {
-        const ans = await findDisabledTeachers()
-        res.status(ans.status).send(ans.data)
+        const ans = await findAllTeachers()
+        if (ans)
+            res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/findTeacherByCondition', express.json(), async (req, res) => {
+    try {
+        console.log(req.body);
+        const ans = await findTeacherByCondition(req.body)
+        if (ans)
+            res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+//read disabled teachers from sql//
+router.get('/findAllDisabledTeachers', async (req, res) => {
+    try {
+        const ans = await findAllDisabledTeachers()
+        if (ans)
+            res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'not found' })
     }
     catch (error) {
         res.status(500).send(error.message)

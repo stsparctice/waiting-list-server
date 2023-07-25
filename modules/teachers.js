@@ -3,50 +3,79 @@ const app = express();
 require('dotenv').config()
 const { deleteTeacherSchedule } = require('./teacher_schedule')
 const { dbServer, getData, postData } = require('../services/axios');
-const { MONGO_TEACHERS_COLLECTION } = process.env;
 
 // insert  //
 async function insertTeacher(obj) {
     try {
-        console.log("try");
-        console.log({ obj });
-        console.log("entity:", `tbl_${obj.entity}`, "name:", obj.values.TeacherName);
-        const name = await postData(dbServer, '/read_db/readMany', { entity: `tbl_${obj.entity}`, condition: obj.values.TeacherName })
-        console.log(name);
+        const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (name.data[0]) {
-            return "the name is exist"
+            throw new Error("the name is exist")
         }
         else {
-            const ans = await postData(dbServer, '/create_db/createOne', { ...obj })
+            const ans = await postData(dbServer, '/create/createOne', { entity: 'Teachers', values: [{ ...obj, AddedDate: new Date, Disabled: 0 }] })
             return ans;
         }
     }
     catch (error) {
-        console.log("error");
         throw error
     }
 }
 
 // delete //
-async function deleteTeacher(TeacherName) {
-    const ans = await postData(dbServer, '/read_db/read', { table_name: MONGO_TEACHERS_COLLECTION, filter: { ...TeacherName } })
+async function deleteTeacher(obj) {
     try {
+        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (ans.data[0]) {
-            await postData(dbServer, '/delete_db/deleteOne', { table_name: MONGO_TEACHERS_COLLECTION, filter: { ...TeacherName } })
-            deleteTeacherSchedule(ans.data[0]._id.toString())
-            addDisabledTeacher({ name: ans.data[0].name, phone: ans.data[0].phone, address: ans.data[0].address, annotation: ans.data[0].annotation, email: ans.data[0].email });
+            let del = await postData(dbServer, '/delete/deleteOne', { entity: 'Teachers', set: { DisabledDate: new Date, DisableUser: obj.DisableUser, DisableReason: obj.DisableReason }, condition: { TeacherName: `'${obj.TeacherName}'` } })
+            return del
+            // deleteTeacherSchedule(ans.data[0]._id.toString())
+            // addDisabledTeacher({ name: ans.data[0].name, phone: ans.data[0].phone, address: ans.data[0].address, annotation: ans.data[0].annotation, email: ans.data[0].email });
         }
-        return true;
+        else {
+            throw new Error('the name is not exist')
+        }
     }
     catch (error) {
         throw error;
     }
 }
 
+//update //
+async function updateTeacher(obj) {
+    const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+    if (name.data[0]) {
+        if (obj.set.name) {
+            if (obj.name !== obj.set.name) {
+                const teacher = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+                if (teacher.data[0]) {
+                    return "the name is exist";
+                }
+            }
+        }
+        const ans = await postData(dbServer, '/update/updateOne', { entity: 'Teachers', set: obj.set, condition: { TeacherName: `'${obj.TeacherName}'` } })
+        return ans
+    }
+    else {
+        throw new Error('not exist teacher')
+    }
+}
+
+// // insert To SqlDelete Teacher //
+// async function addDisabledTeacher(obj) {
+//     try {
+//         const ans = await postData(dbServer, '/create_db/createOne', { table_name: 'teachers', values: `'${obj.name}','${obj.phone}','${obj.address.city}'` })
+//         return ans
+//     }
+//     catch (error) {
+//         throw error
+//     }
+// }
+
+
 // read //
-async function findTeacher(obj) {
+async function findOneTeacher(obj) {
     try {
-        const ans = await postData(dbServer, '/read_db/read', { table_name: MONGO_TEACHERS_COLLECTION, filter: { ...obj } })
+        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (ans.data[0])
             return ans;
         return 'the teacher does not exist'
@@ -56,38 +85,36 @@ async function findTeacher(obj) {
     }
 }
 
-//update //
-async function updateTeacher(name, update) {
-    let ans = await postData(dbServer, '/read_db/read', { table_name: MONGO_TEACHERS_COLLECTION, filter: { ...name } })
-    if (ans.data[0]) {
-        if (name.name !== update.name) {
-            const teacher = await postData(dbServer, '/read_db/read', { table_name: MONGO_TEACHERS_COLLECTION, filter: { name: update.name } })
-            if (teacher.data[0]) {
-                return "the name is exist";
-            }
-        }
-        ans = await postData(dbServer, '/update_db/updateOne', { table_name: MONGO_TEACHERS_COLLECTION, filter: { ...name }, update: { "$set": { ...update } } })
-    }
-
-    return ans.data
-}
-
-
-// insert To SqlDelete Teacher //
-async function addDisabledTeacher(obj) {
+// readByCondition //
+async function findTeacherByCondition(obj) {
     try {
-        const ans = await postData(dbServer, '/create_db/createOne', { table_name: 'teachers', values: `'${obj.name}','${obj.phone}','${obj.address.city}'` })
-        return ans
+        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { ...obj, Disabled: 0 } })
+        if (ans.data[0])
+            return ans;
+        return 'the teacher does not exist'
     }
     catch (error) {
         throw error
     }
 }
 
-// read from Sql //
-async function findDisabledTeachers() {
+// readAll //
+async function findAllTeachers() {
     try {
-        const ans = await postData(dbServer, '/read_db/read', { table_name: "teachers", columns: '*', condition: '1=1' })
+        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { Disabled: 0 } })
+        if (ans.data[0])
+            return ans;
+        return 'the teacher does not exist'
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+// read disabled teachers from sql //
+async function findAllDisabledTeachers() {
+    try {
+        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { Disabled: 1 } })
         if (ans.data[0])
             return ans
         return "data does not exist"
@@ -97,4 +124,4 @@ async function findDisabledTeachers() {
     }
 }
 
-module.exports = { insertTeacher, deleteTeacher, findTeacher, updateTeacher, findDisabledTeachers }
+module.exports = { insertTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
