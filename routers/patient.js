@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { insertPatient, deleteById, findPatientesByFeature, update, deletePatientById, getAllWaitingPatient
+const {insertRestDetailes, insertPatient, deleteById, findPatientesByFeature, update, deletePatientById, getAllWaitingPatient
     , getAllDeletedOrEmbededPatient, getAllWaitingPatientOrderedByPreference, updateRemarksArray } = require('../modules/patient');
 
 router.get('/findPatientesByFeature/:featureName/:featureValue', async (req, res) => {
@@ -26,6 +26,16 @@ router.post('/updatePatient', express.json(), async (req, res) => {
 router.post('/insertPatient', express.json(), async (req, res) => {
     try {
         const response = await insertPatient(req.body);
+        res.status(200).send(response.data);
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/insertRestDetailes', express.json(), async (req, res) => {
+    try {
+        const response = await insertRestDetailes(req.body);
         res.status(200).send(response.data);
     }
     catch (error) {
