@@ -1,62 +1,438 @@
 require('dotenv').config();
 const { getData, postData, dbServer } = require('../services/axios')
 
-async function basicupdate(query1 = {}, update) {
-    const response = await postData(dbServer, '/crud_db//update', { entity: 'Patients', filter: query1, update: { $set: update } })
-    return response;
-}
-
-async function findPatientesByFeature(featureName, featureValue) {
-    const patients = await postData(dbServer, '/crud_db/read', { entity: 'Patients', filter: { [featureName]: { $regex: featureValue } } })
-    return patients.data
-}
-
-async function insert(patientDitales) {
+// work for patient table
+async function insertPatient(body) {
     try {
-        const patient = await postData(dbServer, '/crud_db/insert', { entity: 'Patients', ...patientDitales })
-        return patient.data;
+        const patient = await postData(dbServer, '/create/createOne', {
+            entity: 'Patient', values: [{
+                IdentityCard: body.id
+                , FirstName: body.firstName
+                , LastName: body.lastName
+                , Phone1: body.phone1
+                , Phone2: body.phone2
+                , BirthDate: body.birthDate
+                , Sex: body.sex
+                , PriceList: body.priceList
+                , Evaluated: body.evaluated
+                , LastEvaluationDate: body.lastEvaluationDate
+                , SendMedDocumentsDate: body.sendMedDocumentsDate
+                , addedDate: new Date()
+                , UserName: body.userName
+                , Disabled: 0
+            }]
+        })
+        return patient;
     } catch (error) {
         return error;
     }
 }
 
-async function deletePatientById(body) {
-    // if (body.ID) {
-    const patient = await postData(dbServer, '/crud_db/read', { entity: 'Patients', filter: { id: body.ID } })
-    if (patient.data) {
-        const p = patient.data[0]
-        await postData(dbServer, '/crud_db/insert', {
-            entity: 'patient',
-            values: `'${p.id}','${p.name}','${p.medicalDocsDate}','${p.selectedGenders}','${p.treatmentLevel}','${p.treatmentPreference}' ,'${p.evaluated}','${p.evaluationDate}','${p.remarks}'`
-        })
-        for (let i of p.swimmingPools) {
-            await postData(dbServer, '/crud_db/insert', {
-                entity: 'patientSwimmingPools',
-                values: `'${p.id}','${i}'`
-            })
-        }
-        for (let i of p.teachers) {
-            await postData(dbServer, '/crud_db/insert', {
-                entity: 'patientTechers',
-                values: `'${p.id}','${i.name}','${i.desired}'`
-            })
-        }
-        for (let i of p.days) {
-            await postData(dbServer, '/crud_db/insert', {
-                entity: 'patientDays',
-                values: `'${p.id}','${i.day}','${i.start}','${i.end}'`
-            })
-        }
+async function insertRestDetailes(body) {
+    if (!body.id)
+        return 'no id'
+    const patient = await findPatientById(body.id)
+    if (patient.data.length > 0) {
+        // Urgency =דחיפות
+        const id = patient.data[0].Id
 
-        await postData(dbServer, '/crud_db/delete', { entity: 'Patients', filter: { id: body.ID } })
+        if (body.teachers.length > 0) {
+            let teachersId = []
+            for (let t of body.teachers) {
+                let teacher = await getData(dbServer, `/read/readOne/Teachers?TeacherName=${t.teacherName}`)
+                teacher = teacher.data[0].Id
+                teachersId.push({ teacherId: teacher, prefer: t.prefer })
+            }
+            _ = await postData(dbServer, '/create/createMany', {
+                entity: 'PatientPreferenceTeachers', values: teachersId.map(t => ({
+                    PatientId: id
+                    , TeacherId: t.teacherId
+                    , Preference: t.prefer
+                    , AddedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        if (body.comments.length > 0) {
+            _ = await postData(dbServer, '/create/createMany', {
+                entity: 'PatientsComment', values: body.comments.map(c => ({
+                    patientId: id
+                    , comment: c
+                    , addedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        if (body.genders.length > 0) {
+            let gendersId = []
+            for (let g of body.genders) {
+                let gender = await getData(dbServer, `/read/readOne/Genders?name='${g}'`)
+                console.log(gender);
+                gender = gender.data[0].Id
+                gendersId.push(gender)
+            }
+            console.log(gendersId);
+            await postData(dbServer, '/create/createMany', {
+                entity: 'PatientsGenders', values: gendersId.map(g => ({
+                    patientId: id
+                    , genderId: g
+                    , addedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        if (body.pools.length > 0) {
+            let poolsId = []
+            for (let p of body.pools) {
+                let pool = await getData(dbServer, `/read/readOne/SwimmingPools?Name='${p}'`)
+                pool = pool.data[0].Id
+                poolsId.push(pool)
+            }
+            await postData(dbServer, '/create/createMany', {
+                entity: 'PatientsPools', values: poolsId.map(p => ({
+                    patientId: id
+                    , poolId: p
+                    , addedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        if (body.treatmentLevels.length > 0) {
+            let treatmentLevelsId = []
+            for (let t of body.treatmentLevels) {
+                let treatment = await getData(dbServer, `/read/readOne/Levels?Name='${t}'`)
+                treatment = treatment.data[0].Id
+                treatmentLevelsId.push(treatment)
+            }
+            await postData(dbServer, '/create/createMany', {
+                entity: 'PatientsTreatmentLevels', values: treatmentLevelsId.map(t => ({
+                    patientId: id
+                    , TreatmentLevelId: t
+                    , addedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        //(לא מאפשר null)disabledDate , DisabledUser:נדרש להכניס גם את  השדות  configכרגע לא עובד כיוון שב  
+        if (body.urgencyNumbers.length > 0) {
+            let urgencyNumbersId = []
+            for (let u of body.urgencyNumbers) {
+                switch (u) {
+                    case "נמוכה": {
+                        urgencyNumbersId.push(1)
+                        break
+                    }
+                    case "בינונית": {
+                        urgencyNumbersId.push(2)
+                        break
+                    }
+                    case "גבוהה": {
+                        urgencyNumbersId.push(3)
+                        break
+                    }
+                }
+            }
+            await postData(dbServer, '/create/createMany', {
+                entity: 'PatientUrgency', values: urgencyNumbersId.map(u => ({
+                    UrgencyNumber: u
+                    , PatientId: id
+                    , AddedDate: new Date()
+                    , UserName: body.userName
+                    , Disabled: 0
+                }))
+            })
+        }
+        // 
+
+        // PatientsPools יש בעיה בשליפת הנתונים מטבלת 
+        //  SwimmingPools מטבלת join בגלל ה 
+
+        if (body.preferenceDays.length > 0) {
+            // let AllDays = []
+            // let pools = await getData(dbServer, `/read/readMany/PatientsPools?patientId=${id}`)
+            // console.log(pools);
+            // for (let pool of pools.data) {
+            //     let days = await postData(dbServer, '/read/readMany/PoolDaySchedule'
+            //         , { condition: { SwimmingPoolId: 1 } })
+            //     AllDays.push(...days.data)
+            // }
+            // console.log(AllDays);
+
+            // let PreferenceDays = []
+            // for (let p of body.preferenceDays) {
+            //     let day = await gostData(dbServer, '/read/readOne/PoolDaySchedule'
+            //         , { condition: { SwimmingPoolId, Day, GenderId, startHour, EndHour } })
+            //     day = day.data[0]
+            //     PreferenceDays.push(day)
+            // }
+            // await postData(dbServer, '/create/createMany', {
+            //     entity: 'PatientPreferenceDays', values: PreferenceDays.map(d => ({
+            //         PatientId: id
+            //         , PoolDayScheduleId: d.Id
+            //         , StartHour: d.StartHour
+            //         , EndHour: d.EndHour
+            //         , AddedDate: new Date()
+            //         , UserName: body.userName
+            //         , Disabled: 0
+            //     }))
+            // })
+        }
     }
-    return patient.data;
-    // }
-    // else{
-    //     return false;
-    // }
+    return patient;
+}
+
+// work
+async function findPatientById(id) {
+    if (!id) {
+        return false
+    }
+    try {
+        const patient = await getData(dbServer, `/read/readOne/Patient?IdentityCard=${id}`)
+        return patient
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+// work
+async function deleteById(body) {
+    if (!body.id) {
+        return false
+    }
+    try {
+        const patient = await findPatientById(body.id)
+        // await getData(dbServer, `/read_db/readOne/Patient?IdentityCard=${body.id}`)
+        if (patient.data) {
+            try {
+                const response = await postData(dbServer, '/delete/deleteOne', { entity: 'Patient', condition: { IdentityCard: body.id }, set: { DisabledDate: new Date(), DisableUser: body.disableUser } })
+                return response
+            } catch (error) {
+                throw error
+            }
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+// work for patient
+async function update(body) {
+    try {
+        if (!body.set) {
+            throw new error
+        }
+        const response = await postData(dbServer, '/update/updateMany', { entity: 'Patient', condition: body.condition, set: body.set })
+        return response;
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+// work
+async function findPatientesByFeature(featureName, featureValue) {
+    try {
+        if (!featureName || !featureValue) {
+            throw new error
+        }
+        const response = await postData(dbServer, '/read/readMany/Patient',
+            { condition: { [featureName]: featureValue } })
+        return response
+    }
+    catch (error) {
+        throw error
+    }
 }
 
 
 
-module.exports = { findPatientesByFeature, insert, basicupdate, deletePatientById }
+async function updateRemarksArray(patientId, remark) {
+    try {
+        if (!patientId || !remark) {
+            throw new error
+        }
+        const response = await postData(dbServer, '/crud/update', { entity: 'Patient', condition: { id: patientId }, update: { $push: { remarks: remark } } })
+        return response;
+    }
+    catch (error) {
+        return error;
+    }
+}
+
+async function deletePatientById(body) {
+    if (!body.ID) {
+        // throw new error
+        return "no id to delete"
+    }
+    if (!body.status) {
+        // throw new error
+        return "no status"
+    }
+    let patient
+    try {
+        patient = await postData(dbServer, '/crud/read', { entity: 'Patient', condition: { id: body.ID } })
+    }
+    catch (error) {
+        return error;
+    }
+    if (patient.data) {
+        const date = new Date().toISOString()
+        const p = patient.data[0]
+        try {
+            await postData(dbServer, '/crud/insert', {
+                entity: 'Patient',
+                values: `'${p.id}','${p.name}','${body.status}','${date}','${p.medicalDocsDate}','${p.selectedGenders}','${p.treatmentLevel}','${p.treatmentPreference}' ,'${p.evaluated}','${p.evaluationDate}','${p.user}','${p.remarks}'`
+            })
+        }
+        catch (error) {
+            return error;
+        }
+        for (let i of p.swimmingPools) {
+            try {
+                await postData(dbServer, '/crud/insert', {
+                    entity: 'patientSwimmingPools',
+                    values: `'${p.id}','${i}'`
+                })
+            }
+            catch (error) {
+                return error;
+            }
+
+        }
+        for (let i of p.teachers) {
+            try {
+                await postData(dbServer, '/crud/insert', {
+                    entity: 'patientTechers',
+                    values: `'${p.id}','${i.name}','${i.desired}'`
+                })
+            }
+            catch (error) {
+                return error;
+            }
+        }
+        for (let i of p.days) {
+            try {
+                await postData(dbServer, '/crud/insert', {
+                    entity: 'patientDays',
+                    values: `'${p.id}','${i.day}','${i.start}','${i.end}'`
+                })
+            }
+            catch (error) {
+                return error;
+            }
+        }
+        try {
+            await postData(dbServer, '/crud/delete', { entity: 'Patient', condition: { id: body.ID } })
+        }
+        catch (error) {
+            throw error
+        }
+    }
+    return patient;
+}
+
+async function getAllWaitingPatient(length = 100, indexStart = 0) {
+    try {
+        const len = parseInt(indexStart) + parseInt(length)
+        const response = await postData(dbServer, '/read/readMany/Patient',
+            { condition: { Disabled: 0, n: { [indexStart]: len } } })
+        // updateTreatmentPreference(response.data)
+        return response
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+async function getAllWaitingPatientOrderedByPreference(length = 100, indexStart = 0) {
+    try {
+        length = parseInt(indexStart) + parseInt(length)
+        let patients
+        patients = await postData(dbServer, '/read/readMany/Patient', { condition: { Disabled: 0, n: { [indexStart]: length } } })
+        // if (patients.data.length > 0) { sortByPreference(patients.data) }
+        return patients
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+
+function sortByPreference(patients) {
+    const HighPrefernce = []
+    const mediumPrefernce = []
+    const lowPrefernce = []
+    for (let p of patients) {
+        if (p.treatmentPreference == "גבוהה") {
+            HighPrefernce.push(p)
+        }
+        else if (p.treatmentPreference == "בינונית") {
+            mediumPrefernce.push(p)
+        }
+        else {
+            lowPrefernce.push(p)
+        }
+    }
+    if (HighPrefernce.length < 100) {
+        HighPrefernce.push(mediumPrefernce.splice(0, 100 - HighPrefernce.length))
+        if (HighPrefernce.length < 100) {
+            HighPrefernce.push(lowPrefernce.splice(0, 100 - HighPrefernce.length))
+        }
+    }
+    return HighPrefernce
+}
+
+async function getAllDeletedOrEmbededPatient(length = 100, indexStart = 0) {
+    try {
+        let patients
+        length = parseInt(indexStart) + parseInt(length)
+        patients = await postData(dbServer, '/read/readMany/Patient', { condition: { Disabled: 1, n: { [indexStart]: length } } })
+        return patients
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+async function updateTreatmentPreference(patients) {
+    const date = new Date()
+    const day = date.getDate()
+    const month = date.getMonth() + 1
+    const year = date.getFullYear()
+    // console.log(day, month, year, date);
+    for (let p of patients) {
+        checkUpdatepreference(p, day, month, year)
+    }
+}
+
+async function checkUpdatepreference(patient, day, month, year) {
+    const dateP = new Date(patient.medicalDocsDate)
+    const dayP = dateP.getDate()
+    const monthP = dateP.getMonth() + 1
+    const yearP = dateP.getFullYear()
+
+    if (patient.treatmentPreference != "גבוהה") {
+        if ((month - monthP > 3) || (month - monthP == 3 && day >= dayP) ||
+            (year > yearP && ((Math.abs(month - monthP) == 9 && day >= dayP) ||
+                (Math.abs(month - monthP) > 6 && Math.abs(month - monthP) < 9) || (Math.abs(month - monthP) == 6 && day < dayP)))) {
+            // if (patient.treatmentPreference === "נמוכה") {
+            await basicupdate({ "id": patient.id }, { "treatmentPreference": "בינונית" })
+            // }
+        }
+        // else {
+        if ((month - monthP > 6) || (month - monthP == 6 && day >= dayP) ||
+            (year > yearP && ((Math.abs(month - monthP) == 6 && day >= dayP) || Math.abs(month - monthP) <= 6))) {
+            await basicupdate({ "id": patient.id }, { "treatmentPreference": "גבוהה" })
+        }
+        // }
+    }
+}
+
+module.exports = { insertRestDetailes, insertPatient, deleteById, updateRemarksArray, findPatientesByFeature, update, deletePatientById, getAllWaitingPatient, getAllDeletedOrEmbededPatient, getAllWaitingPatientOrderedByPreference }
