@@ -26,7 +26,7 @@ async function deleteTeacherSchedule(id) {
         const ans = await postData(dbServer, '/crud_db/delete', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { name: id } })
     }
     catch (error) {
-
+        throw error
     }
 }
 
