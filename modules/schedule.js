@@ -1,10 +1,11 @@
 require('dotenv').config()
-const { dbServer, postData } = require('../services/axios')
+const {  postData } = require('../services/axios')
+const {wlServer} =require('../services/servers')
 
 //מחזיר את כל השעות המתאימות לפילטר שנשלח
 async function getAll(filter = {}, project = {}) {
     try {
-        let ans = await postData(dbServer, '/crud_db/read', { entity: 'SwimmingPool', filter: filter, project: project })
+        let ans = await postData(wlServer, '/crud_db/read', { entity: 'SwimmingPool', filter: filter, project: project })
         return ans
     }
     catch (error) {
@@ -19,9 +20,9 @@ async function addHour(obj = {}, arr = '') {
     let arrayFilters
     switch (arr) {
         case 'activeHours':
-            let check = await postData(dbServer, '/crud_db/read', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName, "schedule.day": obj.day }, project: { id: 1 } })
+            let check = await postData(wlServer, '/crud_db/read', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName, "schedule.day": obj.day }, project: { id: 1 } })
             if (check.data.length == 0) {
-                _ = await postData(dbServer, 'crud_db/update', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName }, update: { $addToSet: { "schedule": { day: obj.day } } } })
+                _ = await postData(wlServer, 'crud_db/update', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName }, update: { $addToSet: { "schedule": { day: obj.day } } } })
             }
             addToSet = { $addToSet: { "schedule.$[d].activeHours": { "startActiveHour": obj.startHour, "endActiveHour": obj.endHour } } }
             arrayFilters = { arrayFilters: [{ 'd.day': obj.day }] }
@@ -31,7 +32,7 @@ async function addHour(obj = {}, arr = '') {
             break;
     }
     try {
-        let ans = await postData(dbServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: addToSet, options: arrayFilters })
+        let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: addToSet, options: arrayFilters })
         return ans
     }
     catch (error) {
@@ -57,7 +58,7 @@ async function updateHour(obj, arr) {
             break;
     }
     try {
-        return await postData(dbServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: set, options: arrayFilters })
+        return await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: set, options: arrayFilters })
     }
     catch (error) {
         throw new Error(error)
@@ -77,7 +78,7 @@ async function getHour(obj, arr) {
             break;
     }
     try {
-        let ans = await postData(dbServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: set, options: arrayFilters })
+        let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: set, options: arrayFilters })
         return ans
     }
     catch (error) {
@@ -90,7 +91,7 @@ async function deleteDay(obj) {
     const filter = { 'poolName': obj.poolName }
     let pull = { $pull: { 'schedule': { 'day': obj.day } } }
     try {
-        let ans = await postData(dbServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: pull })
+        let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: pull })
         return ans.data
     }
     catch (error) {
@@ -113,7 +114,7 @@ async function deleteHour(obj, arr) {
             break;
     }
     try {
-        let ans = await postData(dbServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: pull })
+        let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: pull })
         console.log('ans',ans.data);
         return ans
     }

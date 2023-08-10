@@ -1,10 +1,11 @@
-require('dotenv').config()
-const { dbServer, getData, postData } = require('../services/axios')
+
+const {  getData, postData } = require('../services/axios')
+const {wlServer} = require('../services/servers')
 
 //פונקציה המוסיפה שם קבוצה למערכת
 async function add(name, genderColor, sex, maleMaxAge, femaleMaxAge, status) {
     try {  
-        let ans = await postData(dbServer, '/crud_db/insert', { entity: 'GenderCollection', name: name, sex: sex, maleMaxAge: maleMaxAge, femaleMaxAge: femaleMaxAge, genderColor: genderColor, status: status })
+        let ans = await postData(wlServer, '/crud_db/insert', { entity: 'GenderCollection', name: name, sex: sex, maleMaxAge: maleMaxAge, femaleMaxAge: femaleMaxAge, genderColor: genderColor, status: status })
         return ans
     }
     catch (error) {
@@ -16,7 +17,7 @@ async function add(name, genderColor, sex, maleMaxAge, femaleMaxAge, status) {
 async function find(filter = {}, project = {}) {
 
     try {
-        let ans = await postData(dbServer, '/crud_db/read', { entity: 'GenderCollection', filter: filter, project: project.project })
+        let ans = await postData(wlServer, '/crud_db/read', { entity: 'GenderCollection', filter: filter, project: project.project })
         return ans.data
     }
     catch (error) {
@@ -27,7 +28,7 @@ async function find(filter = {}, project = {}) {
 // פונקציה המעדכנת נתוני קבוצה עפי שם הקבוצה שמקבלת
 async function update(oldname, name, sex, maleMaxAge, femaleMaxAge, genderColor, disabled = false) {
     try {
-        let ans = await postData(dbServer, '/crud_db/update',
+        let ans = await postData(wlServer, '/crud_db/update',
             {
                 entity: 'GenderCollection', filter: { name: oldname },
                 update: { $set: { name: name, sex: sex, mmmaxAge: maleMaxAge, fmaxAge: femaleMaxAge, genderColor: genderColor, disabled: disabled } }
@@ -45,7 +46,7 @@ async function update(oldname, name, sex, maleMaxAge, femaleMaxAge, genderColor,
 ////פונקציה המוסיפה נתון 'מחוק' לקבוצה עפי שם הקבוצה שמקבלת
 async function deleted(filter) {
     try {
-        let ans = await postData(dbServer, '/crud_db/update', {
+        let ans = await postData(wlServer, '/crud_db/update', {
             entity: 'GenderCollection', filter: { name: filter },
             update: { $set: { disabled: true } }
         })

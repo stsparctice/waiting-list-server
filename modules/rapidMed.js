@@ -1,8 +1,9 @@
-const { dbServer, postData } = require('../services/axios')
+const {  postData } = require('../services/axios')
+const {rapidServer} = require('../services/servers')
 
 async function readDetails(id) {
     try {
-        let ans = await postData(dbServer, '/crud_db/read', {
+        let ans = await postData(rapidServer, '/crud_db/read', {
             entity: 'patients',
             columns:
                 `[ID]
@@ -18,8 +19,9 @@ async function readDetails(id) {
             condition: `ID='${id}'`
         })
         ans.data.Birthdate = checkDate(ans.data.Birthdate)
+        
 
-        let medProb = await postData(dbServer, '/crud_db/read', {
+        let medProb = await postData(rapidServer, '/crud_db/read', {
             database: 'RapidMed',
             entity: `MedProbs as m`,
             secondTableName: `Patients p`,
@@ -28,7 +30,7 @@ async function readDetails(id) {
             condition: `id='${id}'`
         })
 
-        let priceList = await postData(dbServer, '/crud_db/read', {
+        let priceList = await postData(rapidServer, '/crud_db/read', {
             database: 'RapidMed',
             entity: `PriceLists pl`,
             secondTableName: `Patients p`,
@@ -76,6 +78,7 @@ function checkDate(dateString) {
         if (date.getDate() !== parseInt(dateString.slice(0, 1)))
             return 'no date'
     }
+    console.log({date})
     return date
 }
 

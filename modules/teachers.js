@@ -1,18 +1,18 @@
 const express = require('express');
 const app = express();
-require('dotenv').config()
 const { deleteTeacherSchedule } = require('./teacher_schedule')
-const { dbServer, getData, postData } = require('../services/axios');
+const {  getData, postData } = require('../services/axios');
+const {wlServer} = require('../services/servers')
 
 // insert  //
 async function insertTeacher(obj) {
     try {
-        const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+        const name = await postData(wlServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (name.data[0]) {
             throw new Error("the name is exist")
         }
         else {
-            const ans = await postData(dbServer, '/create/createOne', { entity: 'Teachers', values: [{ ...obj, AddedDate: new Date, Disabled: 0 }] })
+            const ans = await postData(wlServer, '/create/createOne', { entity: 'Teachers', values: [{ ...obj, AddedDate: new Date, Disabled: 0 }] })
             return ans;
         }
     }
@@ -24,9 +24,9 @@ async function insertTeacher(obj) {
 // delete //
 async function deleteTeacher(obj) {
     try {
-        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (ans.data[0]) {
-            let del = await postData(dbServer, '/delete/deleteOne', { entity: 'Teachers', set: { DisabledDate: new Date, DisableUser: obj.DisableUser, DisableReason: obj.DisableReason }, condition: { TeacherName: `'${obj.TeacherName}'` } })
+            let del = await postData(wlServer, '/delete/deleteOne', { entity: 'Teachers', set: { DisabledDate: new Date, DisableUser: obj.DisableUser, DisableReason: obj.DisableReason }, condition: { TeacherName: `'${obj.TeacherName}'` } })
             return del
             // deleteTeacherSchedule(ans.data[0]._id.toString())
             // addDisabledTeacher({ name: ans.data[0].name, phone: ans.data[0].phone, address: ans.data[0].address, annotation: ans.data[0].annotation, email: ans.data[0].email });
@@ -42,17 +42,17 @@ async function deleteTeacher(obj) {
 
 //update //
 async function updateTeacher(obj) {
-    const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+    const name = await postData(wlServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
     if (name.data[0]) {
         if (obj.set.name) {
             if (obj.name !== obj.set.name) {
-                const teacher = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+                const teacher = await postData(wlServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
                 if (teacher.data[0]) {
                     return "the name is exist";
                 }
             }
         }
-        const ans = await postData(dbServer, '/update/updateOne', { entity: 'Teachers', set: obj.set, condition: { TeacherName: `'${obj.TeacherName}'` } })
+        const ans = await postData(wlServer, '/update/updateOne', { entity: 'Teachers', set: obj.set, condition: { TeacherName: `'${obj.TeacherName}'` } })
         return ans
     }
     else {
@@ -63,7 +63,7 @@ async function updateTeacher(obj) {
 // // insert To SqlDelete Teacher //
 // async function addDisabledTeacher(obj) {
 //     try {
-//         const ans = await postData(dbServer, '/create_db/createOne', { table_name: 'teachers', values: `'${obj.name}','${obj.phone}','${obj.address.city}'` })
+//         const ans = await postData(wlServer, '/create_db/createOne', { table_name: 'teachers', values: `'${obj.name}','${obj.phone}','${obj.address.city}'` })
 //         return ans
 //     }
 //     catch (error) {
@@ -75,7 +75,7 @@ async function updateTeacher(obj) {
 // read //
 async function findOneTeacher(obj) {
     try {
-        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (ans.data[0])
             return ans;
         return 'the teacher does not exist'
@@ -88,7 +88,7 @@ async function findOneTeacher(obj) {
 // readByCondition //
 async function findTeacherByCondition(obj) {
     try {
-        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { ...obj, Disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { ...obj, Disabled: 0 } })
         if (ans.data[0])
             return ans;
         return 'the teacher does not exist'
@@ -101,7 +101,7 @@ async function findTeacherByCondition(obj) {
 // readAll //
 async function findAllTeachers() {
     try {
-        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { Disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { Disabled: 0 } })
         if (ans.data[0])
             return ans;
         return 'the teacher does not exist'
@@ -114,7 +114,7 @@ async function findAllTeachers() {
 // read disabled teachers from sql //
 async function findAllDisabledTeachers() {
     try {
-        const ans = await postData(dbServer, '/read/readMany/Teachers', { condition: { Disabled: 1 } })
+        const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { Disabled: 1 } })
         if (ans.data[0])
             return ans
         return "data does not exist"
