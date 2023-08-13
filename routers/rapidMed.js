@@ -3,9 +3,10 @@ const express = require('express');
 const router = require('express').Router()
 const { readDetails } = require('../modules/rapidMed')
 
-router.post('/find', express.json(), async (req, res) => {
+router.get('/find', async (req, res) => {
+console.log('find')
     try {
-        patient= await readDetails(req.body.id)
+        patient= await readDetails(req.query.id)
         console.log('patient',patient);
         res.status(200).send(patient)
     }

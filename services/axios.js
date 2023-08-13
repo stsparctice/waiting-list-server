@@ -3,9 +3,12 @@ require('dotenv');
 
 
 
-const getData = async (server, url) => {
+const getData = async (server, url, query) => {
     let response;
     try {
+        if(query){
+            url+=`?${buildConditionFromQuery(query)}`
+        }
         response = await server.get(url);
     }
     catch (error) {
@@ -25,4 +28,12 @@ const postData = async (server, url, body) => {
     }
     return response;
 }
+
+const buildConditionFromQuery = (query)=>{
+    const entries = Object.entries(query)
+    const queryArray = entries.reduce((q, ent)=>q=[...q,`${ent[0]}=${ent[1]}`], [])
+    const queryString = queryArray.join('&')
+    return queryString
+}
+
 module.exports = {  getData, postData }
