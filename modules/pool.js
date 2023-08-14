@@ -2,26 +2,37 @@ require('dotenv').config()
 const { MONGO_POOL_COLLECTION } = process.env
 const { dbServer, getData, postData } = require('../services/axios')
 //פונקציה המוסיפה בריכה למערכת
-async function add(obj, date) {
+async function add(obj) {
     try {
-        const name = await postData(dbServer, '/read_db/readOne/SwimmingPools', { condition: { poolName: obj.poolName } })
+        const name = await postData(dbServer, '/read_db/readOne/SwimmingPools', { condition: { Name: `'${obj.Name}'` } })
         if (name.data[0]) {
-            return "the name is already exist"
+            throw new Error("the name is exist")
         }
-        let ans = await postData(dbServer, '/create_db/createOne/SwimmingPools', {  values:{poolName: obj.poolName, poolColor: obj.poolColor, poolAddress: obj.poolAddress, schedule: [], status: 'add', addedDate: date} })
-        return ans.data
+        else {
+            let ans = await postData(dbServer, '/create_db/createOne', { entity: 'SwimmingPools', values: [{ Name: obj.Name, Color: obj.Color, Address: obj.Address }] })
+            return ans
+            // , schedule: [], status: 'add', AddedDate: new Date 
+        }
     }
     catch (error) {
         throw error
     }
 }
 //פונקציה המחזירה נתוני בריכה עפי פילטר
-async function find(filter = {}, project = {}) {
+async function find(obj) {
+    console.log(obj, 'find');
+  
+    console.log(obj);
     try {
-        let ans = await postData(dbServer, '/read_db/readOne/SwimmingPools', {  condition: filter, project: project.project })
+    
+        let ans = await postData(dbServer, '/read_db/readOne/SwimmingPools', {condition:obj})
         if (ans.data.length < 1)
-            return "the details didnt found"
-        return ans.data
+            throw new Error("the details didnt found")
+        else 
+        { 
+            console.log('else');
+            return ans
+        }
     }
     catch (error) {
         throw error
@@ -40,7 +51,8 @@ async function update(obj) {
                 }
             }
             let ans = await postData(dbServer, '/update_db/updateOne',
-                {   entity:MONGO_POOL_COLLECTION,
+                {
+                    entity: MONGO_POOL_COLLECTION,
                     condition: { poolName: obj.oldPoolName },
                     set: { $set: { poolName: obj.name, poolColor: obj.color, poolAddress: obj.address, status: 'add' } }
                 })
@@ -55,10 +67,10 @@ async function update(obj) {
 //פונקציה המוסיפה נתון 'מחוק' לבריכה עפי שם הבריכה שמקבלת
 async function deleted(obj) {
     try {
-        let ans = await postData(dbServer, '/read_db/readOne/SwimmingPools', {  condition: { poolName: obj.poolName } })
+        let ans = await postData(dbServer, '/read_db/readOne/SwimmingPools', { condition: { poolName: obj.poolName } })
         if (ans.data[0]) {
             ans = await postData(dbServer, '/update_db/updateOne', {
-                entity:MONGO_POOL_COLLECTION,
+                entity: MONGO_POOL_COLLECTION,
                 condition: { poolName: obj.poolName },
                 update: { $set: { disabled: true } }
             })
@@ -66,11 +78,11 @@ async function deleted(obj) {
         }
         return 'the name is not exist'
     }
-        catch (error) {
-            throw error
-        }
+    catch (error) {
+        throw error
     }
+}
 
 
 
-    module.exports = { add, update, find, deleted }
+module.exports = { add, update, find, deleted }
