@@ -1,27 +1,31 @@
 const { postData, getData } = require('../services/axios')
 const { rapidServer } = require('../services/servers')
 
+const patientType = {
+    ID: 'id',
+    NAME: 'name',
+    FAMILY_NAME: 'familyName',
+    PHONE: 'phone',
+    WORK_PHONE: 'workPhone',
+    CELL_PHONE: 'cellPhone',
+    COMMENTS: 'comments',
+    BIRTHDATE: 'birthdate',
+    SEX: 'sex',
+    KUPATHOLIM: 'kupatHolim'
+}
+
+const medProbType={
+    MED_PROB :'medProb'
+}
+
+const priceListType={
+    NAME:'name'
+}
+
+
+
 async function readDetails(id) {
     try {
-        // let ans = await postData(rapidServer, '/crud_db/read', {
-        //     entity: 'patients',
-        //     columns:
-        //         `[ID]
-        //     ,[Name]
-        //     ,[Family Name]
-        //     ,[Phone]
-        //     ,[Work Phone]
-        //     ,[Cell Phone]
-        //     ,[Comments]
-        //     ,[Birthdate]
-        //     ,[Sex]
-        //     ,[KupatHolim]`,
-        //     condition: `ID='${id}'`
-        // })
-        // ans.data.Birthdate = checkDate(ans.data.Birthdate)
-
-
-        // let medProb = await postData(rapidServer, '/crud_db/read', {
         //     database: 'RapidMed',
         //     entity: `MedProbs as m`,
         //     secondTableName: `Patients p`,
@@ -30,23 +34,22 @@ async function readDetails(id) {
         //     condition: `id='${id}'`
         // })
 
-        let patient = await getData(rapidServer, '/read/readOne/patients', {
-            id
+        let patient = await postData(rapidServer, '/read/readOne/patients', {
+            condition: { id },
+            entitiesFields: [
+                {entity:'patients', fields: [patientType.ID, patientType.NAME, patientType.FAMILY_NAME,
+                patientType.PHONE, patientType.WORK_PHONE, patientType.CELL_PHONE,
+                patientType.COMMENTS, patientType.BIRTHDATE, patientType.SEX, patientType.KUPATHOLIM]},
+                {entity: 'medProbs', fields: [medProbType.MED_PROB]},
+                {entity: 'priceLists', fields:[priceListType.NAME]}
+                ]
         })
         const { data } = patient
         console.log({ data })
-        const {birthdate} = data[0]
+        const { birthdate } = data[0]
         console.log(birthdate)
         const ans = checkDate(birthdate)
-        console.log({ans})
-        // let priceList = await postData(rapidServer, '/crud_db/read', {
-        //     database: 'RapidMed',
-        //     entity: `PriceLists pl`,
-        //     secondTableName: `Patients p`,
-        //     columns: `pl.Name`,
-        //     on: `pl.Number =p.PriceList`,
-        //     condition: `id='${id}'`
-        // })
+        console.log({ ans })
 
         ans.data[0].medProb = medProb.data.MedProb
         ans.data[0].priceList = priceList.data.Name

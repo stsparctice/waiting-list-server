@@ -4,6 +4,7 @@ const router = require('express').Router()
 const { add, find, update, deleted } = require('../modules/gender')
 
 router.get('/find/:name', async (req, res) => {
+    
     let ans = await find({ name: req.params.name ,disabled: { $exists: false }})
     res.send(ans)
 })

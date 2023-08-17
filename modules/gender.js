@@ -17,7 +17,7 @@ async function add(name, genderColor, sex, maleMaxAge, femaleMaxAge, status) {
 async function find(filter = {}, project = {}) {
 
     try {
-        let ans = await postData(wlServer, '/crud_db/read', { entity: 'GenderCollection', filter: filter, project: project.project })
+        let ans = await postData(wlServer, '/read/readMany/Genders')   //, { entity: 'GenderCollection', filter: filter, project: project.project }
         return ans.data
     }
     catch (error) {
