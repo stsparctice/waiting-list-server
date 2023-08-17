@@ -14,12 +14,12 @@ const patientType = {
     KUPATHOLIM: 'kupatHolim'
 }
 
-const medProbType={
-    MED_PROB :'medProb'
+const medProbType = {
+    MED_PROB: 'medProb'
 }
 
-const priceListType={
-    NAME:'name'
+const priceListType = {
+    NAME: 'name'
 }
 
 
@@ -37,12 +37,22 @@ async function readDetails(id) {
         let patient = await postData(rapidServer, '/read/readOne/patients', {
             condition: { id },
             entitiesFields: [
-                {entity:'patients', fields: [patientType.ID, patientType.NAME, patientType.FAMILY_NAME,
-                patientType.PHONE, patientType.WORK_PHONE, patientType.CELL_PHONE,
-                patientType.COMMENTS, patientType.BIRTHDATE, patientType.SEX, patientType.KUPATHOLIM]},
-                {entity: 'medProbs', fields: [medProbType.MED_PROB]},
-                {entity: 'priceLists', fields:[priceListType.NAME]}
-                ]
+                {
+                    entity: 'patients', fields: [
+                        patientType.ID,
+                        patientType.NAME,
+                        patientType.FAMILY_NAME,
+                        patientType.PHONE,
+                        patientType.WORK_PHONE,
+                        patientType.CELL_PHONE,
+                        patientType.COMMENTS,
+                        patientType.BIRTHDATE,
+                        patientType.SEX, 
+                        patientType.KUPATHOLIM]
+                },
+                { entity: 'medProbs', fields: [medProbType.MED_PROB] },
+                { entity: 'priceLists', fields: [priceListType.NAME] }
+            ]
         })
         const { data } = patient
         console.log({ data })
@@ -54,7 +64,7 @@ async function readDetails(id) {
         ans.data[0].medProb = medProb.data.MedProb
         ans.data[0].priceList = priceList.data.Name
         // console.log('ans', ans.data);
-        if (ans.data[0].Name && ans.data[0]['Family Name'] && ans.data[0].Birthdate != 'no date')
+        if (ans.data[0].Name && ans.data[0][patientType.FAMILY_NAME] && ans.data[0].Birthdate != 'no date')
             return ans.data[0]
         return { error: 'one or more details are missing' }
     }
