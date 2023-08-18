@@ -18,9 +18,6 @@ const medProbType={
     MED_PROB :'medProb'
 }
 
-const priceListType={
-    NAME:'name'
-}
 
 
 
@@ -40,8 +37,7 @@ async function readDetails(id) {
                 {entity:'patients', fields: [patientType.ID, patientType.NAME, patientType.FAMILY_NAME,
                 patientType.PHONE, patientType.WORK_PHONE, patientType.CELL_PHONE,
                 patientType.COMMENTS, patientType.BIRTHDATE, patientType.SEX, patientType.KUPATHOLIM]},
-                {entity: 'medProbs', fields: [medProbType.MED_PROB]},
-                {entity: 'priceLists', fields:[priceListType.NAME]}
+                {entity: 'medProbs', fields: [medProbType.MED_PROB]}
                 ]
         })
         const { data } = patient
