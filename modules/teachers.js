@@ -88,6 +88,7 @@ async function findOneTeacher(obj) {
 // readByCondition //
 async function findTeacherByCondition(obj) {
     try {
+        console.log({obj})
         const ans = await postData(wlServer, '/read/readMany/Teachers', { condition: { ...obj, Disabled: 0 } })
         if (ans.data[0])
             return ans;

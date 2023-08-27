@@ -1,9 +1,9 @@
 const express = require('express');
 const router = require('express').Router()
-
+const {httpLogger} = require('../services/logger/http-logger')
 const { add, find, update, deleted } = require('../modules/gender')
 
-router.get('/find/:name', async (req, res) => {
+router.get('/find/:name', httpLogger(), async (req, res) => {
     
     let ans = await find({ name: req.params.name ,disabled: { $exists: false }})
     res.send(ans)
