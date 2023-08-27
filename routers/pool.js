@@ -26,7 +26,7 @@ router.get('/find/:poolName', async (req, res) => {
 })
 router.get('/getAll',  async (req, res) => {
     try {
-        let ans = await find({ disabled: { $exists: false } },{project:{schedule:0}})
+        let ans = await find({ disabled: 0})
         res.status(200).send(ans)
     }
     catch (error) {

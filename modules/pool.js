@@ -14,7 +14,7 @@ async function add(name, color, address,date) {
 //פונקציה המחזירה נתוני בריכה עפי פילטר
 async function find(filter = {}, project = {}) {
     try {
-        let ans = await postData(wlServer, '/crud_db/read', { entity: 'swimmingPools', filter: filter, project: project })
+        let ans = await postData(wlServer, '/read/readMany/swimmingPools', {  condition: filter })
         return ans.data
     }
     catch (error) {
