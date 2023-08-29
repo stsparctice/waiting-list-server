@@ -28,6 +28,7 @@ router.get('/getAll',  async (req, res) => {
     try {
         let ans = await find({ disabled: 0})
         console.log({ans})
+
         res.status(200).send(ans)
     }
     catch (error) {
