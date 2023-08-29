@@ -7,7 +7,7 @@ const { httpLogger } = require('../services/logger/http-logger');
 router.post('/add', express.json(),httpLogger(), async (req, res) => {
     try {
     
-        let ans = await add(req.body.poolName, req.body.poolColor, req.body.poolAddress,new Date())
+        let ans = await add(req.body.name, req.body.color, req.body.address,new Date())
         res.status(200).send(ans.data)
     }
     catch (error) {
