@@ -38,7 +38,7 @@ router.get('/getAll',  async (req, res) => {
 })
 router.post('/update', express.json(), async (req, res) => {
     try {
-        let ans = await update(req.body.oldPoolName, req.body.poolName, req.body.poolColor, req.body.poolAddress)
+        let ans = await update(req.body)
         res.status(200).send(ans)
     }
     catch (error) {

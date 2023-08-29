@@ -1,10 +1,10 @@
 
 const { getData, postData } = require('../services/axios')
-const {wlServer} = require('../services/servers')
+const { wlServer } = require('../services/servers')
 //פונקציה המוסיפה בריכה למערכת
-async function add(name, color, address,date) {
+async function add(name, color, address, date) {
     try {
-        let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools',values:{  name, color, address, addedDate:date, username:'develop', disabled:0 }})
+        let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: { name, color, address, addedDate: date, username: 'develop', disabled: 0 } })
         return ans
     }
     catch (error) {
@@ -14,7 +14,7 @@ async function add(name, color, address,date) {
 //פונקציה המחזירה נתוני בריכה עפי פילטר
 async function find(filter = {}, project = {}) {
     try {
-        let ans = await postData(wlServer, '/read/readMany/swimmingPools', {  condition: filter })
+        let ans = await postData(wlServer, '/read/readMany/swimmingPools', { condition: filter })
         return ans.data
     }
     catch (error) {
@@ -22,12 +22,13 @@ async function find(filter = {}, project = {}) {
     }
 }
 //פונקציה המעדכנת נתוני בריכה עפי שם הבריכה שמקבלת
-async function update(oldPoolName, name, color, address) {
+async function update(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update',
+        let ans = await postData(wlServer, '/update/updateOne/',
             {
-                entity: 'swimmingPools', filter: { poolName: oldPoolName },
-                update: { $set: { poolName: name, poolColor: color, poolAddress: address, status: 'add' } }
+                entity: 'swimmingPools',
+                condition: { id: data.id }
+
             })
         return ans.matchedCount
     }
