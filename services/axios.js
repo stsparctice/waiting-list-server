@@ -21,6 +21,7 @@ const postData = async (server, url, body) => {
     console.log({body})
     try {
        let response = await server.post(url, body);
+       console.log({response})
         return response;
     }
 

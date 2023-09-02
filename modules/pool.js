@@ -4,8 +4,10 @@ const { wlServer } = require('../services/servers')
 //פונקציה המוסיפה בריכה למערכת
 async function add(name, color, address, date) {
     try {
-        let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: { name, color, address, addedDate: date, username: 'develop', disabled: 0 } })
-        return ans
+        const newPool = { name, address, color, addedDate: date, userName: 'develop', disabled: 0 }
+        let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: newPool })
+        newPool.id = ans.Id
+        return newPool
     }
     catch (error) {
         throw new Error('didnt get a matching details')
@@ -27,10 +29,11 @@ async function update(data) {
         let ans = await postData(wlServer, '/update/updateOne/',
             {
                 entity: 'swimmingPools',
-                condition: { id: data.id }
-
+                condition: { id: data.id },
+                set: data
             })
-        return ans.matchedCount
+        console.log(ans)
+        return ans
     }
     catch (error) {
         throw new Error('didnt get a matching details')
