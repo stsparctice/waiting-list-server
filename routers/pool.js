@@ -49,7 +49,7 @@ router.post('/update', express.json(), async (req, res) => {
 })
 router.post('/delete', express.json(), async (req, res) => {
     try {
-        let ans = await deleted(req.body.poolName)
+        let ans = await deleted(req.body)
         res.status(200).send(ans)
     }
     catch(error){

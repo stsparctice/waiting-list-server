@@ -6,7 +6,8 @@ async function add(name, color, address, date) {
     try {
         const newPool = { name, address, color, addedDate: date, userName: 'develop', disabled: 0 }
         let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: newPool })
-        newPool.id = ans.Id
+        
+        newPool.id = ans.data.Id
         return newPool
     }
     catch (error) {
@@ -40,11 +41,11 @@ async function update(data) {
     }
 }
 //פונקציה המוסיפה נתון 'מחוק' לבריכה עפי שם הבריכה שמקבלת
-async function deleted(name) {
+async function deleted(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update', {
-            entity: 'swimmingPools', filter: { poolName: name },
-            update: { $set: { disabled: true } }
+        let ans = await postData(wlServer, '/delete/deleteOne', {
+            entity: 'swimmingPools', condition: { id:data.id},
+            data:{...data, disableUser:'develop', disabledDate:new Date().toISOString(), disabled:1}
         })
         return ans.data
     }
