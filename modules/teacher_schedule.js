@@ -5,6 +5,7 @@ const {wlServer} = require('../services/servers')
 
 // insert
 async function insertTeacherSchedule(obj) {
+    console.log("obj: ",obj);
     try {
         obj.name = await findTeacherScheduleByTeacherName(obj.name)
         if (obj.name) {
@@ -21,7 +22,7 @@ async function insertTeacherSchedule(obj) {
     }
 }
 
-//delete
+// delete
 async function deleteTeacherSchedule(id) {
     try {
         const ans = await postData(wlServer, '/crud_db/delete', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { name: id } })
@@ -31,7 +32,7 @@ async function deleteTeacherSchedule(id) {
     }
 }
 
-//update
+// update
 async function updateTeacherSchedule(name, update) {
     try {
         name = await findTeacherScheduleByTeacherName(name)
