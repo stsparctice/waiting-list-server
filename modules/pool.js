@@ -1,11 +1,14 @@
 
 const { getData, postData } = require('../services/axios')
-const {wlServer} = require('../services/servers')
+const { wlServer } = require('../services/servers')
 //פונקציה המוסיפה בריכה למערכת
-async function add(name, color, address,date) {
+async function add(name, color, address, date) {
     try {
-        let ans = await postData(wlServer, '/crud_db/insert', { entity: 'SwimmingPool', poolName: name, poolColor: color, poolAddress: address, schedule: [], status: 'add',addedDate:date })
-        return ans
+        const newPool = { name, address, color, addedDate: date, userName: 'develop', disabled: 0 }
+        let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: newPool })
+        
+        newPool.id = ans.data.Id
+        return newPool
     }
     catch (error) {
         throw new Error('didnt get a matching details')
@@ -14,7 +17,7 @@ async function add(name, color, address,date) {
 //פונקציה המחזירה נתוני בריכה עפי פילטר
 async function find(filter = {}, project = {}) {
     try {
-        let ans = await postData(wlServer, '/crud_db/read', { entity: 'SwimmingPool', filter: filter, project: project })
+        let ans = await postData(wlServer, '/read/readMany/swimmingPools', { condition: filter })
         return ans.data
     }
     catch (error) {
@@ -22,25 +25,28 @@ async function find(filter = {}, project = {}) {
     }
 }
 //פונקציה המעדכנת נתוני בריכה עפי שם הבריכה שמקבלת
-async function update(oldPoolName, name, color, address) {
+async function update(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update',
+        let ans = await postData(wlServer, '/update/updateOne/',
             {
-                entity: 'SwimmingPool', filter: { poolName: oldPoolName },
-                update: { $set: { poolName: name, poolColor: color, poolAddress: address, status: 'add' } }
+                entity: 'swimmingPools',
+                condition: { id: data.id },
+                set: data
             })
-        return ans.matchedCount
+        console.log(ans)
+        return ans
     }
     catch (error) {
         throw new Error('didnt get a matching details')
     }
 }
 //פונקציה המוסיפה נתון 'מחוק' לבריכה עפי שם הבריכה שמקבלת
-async function deleted(name) {
+async function deleted(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update', {
-            entity: 'SwimmingPool', filter: { poolName: name },
-            update: { $set: { disabled: true } }
+        console.log({data});
+        let ans = await postData(wlServer, '/delete/deleteOne', {
+            entity: 'swimmingPools', condition: { id:data.id},
+            data:{...data, disableUser:'develop', disabledDate:new Date().toISOString(), disabled:1}
         })
         return ans.data
     }

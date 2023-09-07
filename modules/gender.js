@@ -3,9 +3,9 @@ const {  getData, postData } = require('../services/axios')
 const {wlServer} = require('../services/servers')
 
 //פונקציה המוסיפה שם קבוצה למערכת
-async function add(name, genderColor, sex, maleMaxAge, femaleMaxAge, status) {
+async function add(data) {
     try {  
-        let ans = await postData(wlServer, '/crud_db/insert', { entity: 'GenderCollection', name: name, sex: sex, maleMaxAge: maleMaxAge, femaleMaxAge: femaleMaxAge, genderColor: genderColor, status: status })
+        let ans = await postData(wlServer, '/create/createOne', { entity: 'genders', values:data })
         return ans
     }
     catch (error) {
@@ -17,7 +17,7 @@ async function add(name, genderColor, sex, maleMaxAge, femaleMaxAge, status) {
 async function find(filter = {}, project = {}) {
 
     try {
-        let ans = await postData(wlServer, '/read/readMany/Genders')   //, { entity: 'GenderCollection', filter: filter, project: project.project }
+        let ans = await postData(wlServer, '/read/readMany/genders')   //, { entity: 'GenderCollection', filter: filter, project: project.project }
         return ans.data
     }
     catch (error) {

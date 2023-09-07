@@ -18,15 +18,16 @@ const getData = async (server, url, query) => {
 }
 
 const postData = async (server, url, body) => {
-    let response;
+    console.log({body})
     try {
-        response = await server.post(url, body);
+       let response = await server.post(url, body);
+       console.log({response})
+        return response;
     }
 
     catch (error) {
         throw error;
     }
-    return response;
 }
 
 const buildConditionFromQuery = (query)=>{

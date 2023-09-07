@@ -1,20 +1,25 @@
 const express = require('express');
 const router = require('express').Router()
-
+const {httpLogger} = require('../services/logger/http-logger')
 const { add, find, update, deleted } = require('../modules/gender')
 
-router.get('/find/:name', async (req, res) => {
+router.get('/find/:name', httpLogger(), async (req, res) => {
     
-    let ans = await find({ name: req.params.name ,disabled: { $exists: false }})
+    let ans = await find({ name: req.params.name ,disabled: 0})
     res.send(ans)
 })
 router.get('/getAll', async (req, res) => {
-    let ans = await find({ disabled: { $exists: false } })
-    res.send(ans)
-})
-router.post('/add', express.json(), async (req, res) => {
     try{
-    let ans = await add(req.body.name, req.body.genderColor, req.body.sex, req.body.mmaxAge, req.body.fmaxAge, req.body.status)
+    let ans = await find({ disabled: 0 })
+    res.status(200).send(ans)
+    }
+    catch (error){
+        res.status(500).send(error)
+    }
+})
+router.post('/add', express.json(), httpLogger(),async (req, res) => {
+    try{
+    let ans = await add(req.body)
     res.status(ans.status).send(ans.data)
     }
     catch(error){
