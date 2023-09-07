@@ -43,6 +43,7 @@ async function update(data) {
 //פונקציה המוסיפה נתון 'מחוק' לבריכה עפי שם הבריכה שמקבלת
 async function deleted(data) {
     try {
+        console.log({data});
         let ans = await postData(wlServer, '/delete/deleteOne', {
             entity: 'swimmingPools', condition: { id:data.id},
             data:{...data, disableUser:'develop', disabledDate:new Date().toISOString(), disabled:1}
