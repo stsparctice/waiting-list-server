@@ -3,13 +3,14 @@ const {  postData } = require('../services/axios')
 const {wlServer} =require('../services/servers')
 
 //מחזיר את כל השעות המתאימות לפילטר שנשלח
-async function getAll(filter = {}, project = {}) {
+async function getAll() {
     try {
-        let ans = await postData(wlServer, '/crud_db/read', { entity: 'SwimmingPool', filter: filter, project: project })
+        let ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition:{disabled:0} })
         return ans
     }
     catch (error) {
-        throw new Error(error)
+        console.log({error})
+        throw error
     }
 }
 

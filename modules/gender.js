@@ -1,12 +1,14 @@
 
-const {  getData, postData } = require('../services/axios')
-const {wlServer} = require('../services/servers')
+const { getData, postData } = require('../services/axios')
+const { wlServer } = require('../services/servers')
 
 //פונקציה המוסיפה שם קבוצה למערכת
 async function add(data) {
-    try {  
-        let ans = await postData(wlServer, '/create/createOne', { entity: 'genders', values:data })
-        return ans
+    try {
+        const newGender = {...data, addedDate: new Date().toISOString(), userName: 'develop', disabled: 0 }
+        let ans = await postData(wlServer, '/create/createOne', { entity: 'genders', values: newGender })
+         newGender.id =  ans.data[0].Id
+        return newGender
     }
     catch (error) {
         throw error
@@ -14,10 +16,10 @@ async function add(data) {
 }
 
 //פונקציה המחזירה נתוני קבוצה עפי שם הקבוצה שמקבלת
-async function find(filter = {}, project = {}) {
+async function find(condition) {
 
     try {
-        let ans = await postData(wlServer, '/read/readMany/genders')   //, { entity: 'GenderCollection', filter: filter, project: project.project }
+        let ans = await postData(wlServer, '/read/readMany/genders', {condition})   //, { entity: 'GenderCollection', filter: filter, project: project.project }
         return ans.data
     }
     catch (error) {
@@ -26,17 +28,18 @@ async function find(filter = {}, project = {}) {
 }
 
 // פונקציה המעדכנת נתוני קבוצה עפי שם הקבוצה שמקבלת
-async function update(oldname, name, sex, maleMaxAge, femaleMaxAge, genderColor, disabled = false) {
+async function update(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update',
+        let ans = await postData(wlServer, '/update/updateOne/',
             {
-                entity: 'GenderCollection', filter: { name: oldname },
-                update: { $set: { name: name, sex: sex, mmmaxAge: maleMaxAge, fmaxAge: femaleMaxAge, genderColor: genderColor, disabled: disabled } }
+                entity: 'genders',
+                condition: { id: data.id },
+                set: data
             })
-            console.log('ans-------',ans.data);
+        console.log(ans)
         return ans
     }
-    catch {
+    catch(error) {
         console.log('error--!!', error);
         throw new Error('dont found matching details')
 
@@ -44,16 +47,18 @@ async function update(oldname, name, sex, maleMaxAge, femaleMaxAge, genderColor,
 }
 
 ////פונקציה המוסיפה נתון 'מחוק' לקבוצה עפי שם הקבוצה שמקבלת
-async function deleted(filter) {
+async function deleted(data) {
     try {
-        let ans = await postData(wlServer, '/crud_db/update', {
-            entity: 'GenderCollection', filter: { name: filter },
-            update: { $set: { disabled: true } }
+
+        let ans = await postData(wlServer, '/delete/deleteOne', {
+            entity: 'genders', condition: { id:data.id},
+            data:{...data, disableUser:'develop', disabledDate:new Date().toISOString(), disabled:1}
         })
-        return ans.matchedCount
+       
+        return ans.data
     }
-    catch {
-        throw new Error('dont found matching details')
+    catch(error) {
+        throw error
     }
 }
 module.exports = {
