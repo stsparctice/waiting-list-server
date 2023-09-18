@@ -1,11 +1,24 @@
 const express = require('express')
 const router = express.Router()
-const { insertTeacherSchedule, updateTeacherSchedule, findTeachersSchedule, findTeacherScheduleToSpecificTeacher } = require('../modules/teacher_schedule')
+const { insertTeacherSchedule, insertPoolDaySchedule, updateTeacherSchedule, findTeachersSchedule, findTeacherScheduleToSpecificTeacher } = require('../modules/teacher_schedule')
 
 // insert
 router.post('/insertTeacherSchedule', express.json(), async (req, res) => {
     try {
         const ans = await insertTeacherSchedule(req.body)
+        if (ans)
+            res.status(200).send(ans.data)
+        else
+            res.status(500).send({ message: 'no insert' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/addPoolDaySchedule', express.json(), async (req, res) => {
+    try {
+        const ans = await insertPoolDaySchedule(req.body)
         if (ans)
             res.status(200).send(ans.data)
         else

@@ -1,11 +1,27 @@
 const express = require('express')
 const router = express.Router()
-const { deleteTeacher, insertTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers } = require('../modules/teachers')
+const { deleteTeacher, insertTeacher,insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers } = require('../modules/teachers')
+const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
-router.post('/insertTeacher', express.json(), async (req, res) => {
+router.post('/insertTeacher', express.json(), httpLogger(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
+        if (ans) {
+            res.status(200).send(ans.data)
+        }
+        else {
+            res.status(500).send({ message: 'no create' })
+        }
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/addPoolToTeacher', express.json(), async(req, res)=>{
+    try {
+        const ans = await insertPoolToTeacher(req.body)
         if (ans) {
             res.status(200).send(ans.data)
         }
