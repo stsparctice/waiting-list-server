@@ -6,12 +6,11 @@ async function add(name, color, address, date) {
     try {
         const newPool = { name, address, color, addedDate: date, userName: 'develop', disabled: 0 }
         let ans = await postData(wlServer, '/create/createOne', { entity: 'swimmingPools', values: newPool })
-        console.log(ans.data)
-        newPool.id = ans.data.Id
+        newPool.id = ans.data[0].Id
         return newPool
     }
     catch (error) {
-        throw new Error('didnt get a matching details')
+        throw error
     }
 }
 //פונקציה המחזירה נתוני בריכה עפי פילטר

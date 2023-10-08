@@ -1,14 +1,18 @@
 const express = require('express')
 const router = express.Router()
-const { addHour, deleteDay, deleteHour, getAll, updateHour } = require('../modules/schedule')
+const { addGenderHour, deleteDay, deleteHour, getAll, updateHour } = require('../modules/schedule')
 const { sortSchedule } = require('../modules/checkScedule')
 
 // בקשה לקבלת  שעות פעילות בריכה מסוימת
-router.get('/getAllActiveHours/:poolName', async (req, res) => {
+router.get('/getAllActiveHours/:poolId', async (req, res) => {
+    console.log('api')
     try {
-        const filter = { 'poolName': req.params.poolName }
-        const project = { 'schedule.day': 1, 'schedule.activeHours': 1, '_id': 0 }
-        const ans = await getAll(filter, project)
+       
+        const condition = req.query
+        condition.swimmingPoolId = req.params.poolId
+        condition.disabled = 0
+        console.log({condition})
+        const ans = await getAll( condition)
         res.status(200).send(ans.data)
     }
     catch (error) {
@@ -108,13 +112,15 @@ router.post('/addActiveHour', express.json(), async (req, res) => {
     }
 })
 // בקשה להוספת שעות פעילות לקבוצה (מקבלת בריכה,יום,שעת התחלה ,שעת סיום וקבוצה)
-router.post('/addHour', express.json(), async (req, res) => {
+router.post('/addGenderHour', express.json(), async (req, res) => {
+    console.log(req.body)
     try {
-        let arr = 'hours'
-        const ans = await addHour(req.body, arr)
-        res.status(200).send(ans.data)
+        const ans = await addGenderHour(req.body)
+        console.log({ans})
+        res.status(200).send(ans)
     }
     catch (error) {
+        console.log({error})
         res.status(404).send(error)
     }
 })

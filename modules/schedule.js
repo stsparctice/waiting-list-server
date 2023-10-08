@@ -1,40 +1,36 @@
 require('dotenv').config()
-const {  postData } = require('../services/axios')
-const {wlServer} =require('../services/servers')
+const { postData, getData } = require('../services/axios')
+const { wlServer } = require('../services/servers')
 
 //מחזיר את כל השעות המתאימות לפילטר שנשלח
-async function getAll() {
+async function getAll(condition) {
     try {
-        let ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition:{disabled:0} })
+        let ans = await postData(wlServer, `/read/readMany/poolDaySchedule`, { condition })
         return ans
     }
     catch (error) {
-        console.log({error})
+        console.log({ error })
         throw error
     }
 }
 
 //  פונקציה להוספת שעה רצויה למערכת השעות
-async function addHour(obj = {}, arr = '') {
-    const filter = { 'poolName': obj.poolName }
-    let addToSet
-    let arrayFilters
-    switch (arr) {
-        case 'activeHours':
-            let check = await postData(wlServer, '/crud_db/read', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName, "schedule.day": obj.day }, project: { id: 1 } })
-            if (check.data.length == 0) {
-                _ = await postData(wlServer, 'crud_db/update', { entity: 'SwimmingPool', filter: { "poolName": obj.poolName }, update: { $addToSet: { "schedule": { day: obj.day } } } })
-            }
-            addToSet = { $addToSet: { "schedule.$[d].activeHours": { "startActiveHour": obj.startHour, "endActiveHour": obj.endHour } } }
-            arrayFilters = { arrayFilters: [{ 'd.day': obj.day }] }
-            break;
-        case 'hours':
-            addToSet = { $addToSet: { "schedule.$[].hours": { "startHour": obj.startHour, "endHour": obj.endHour, "gender": obj.gender } } }
-            break;
-    }
+async function addGenderHour(genderHour) {
+
     try {
-        let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: addToSet, options: arrayFilters })
-        return ans
+        let check = await postData(wlServer, '/read/exist/poolDaySchedule', { condition: genderHour })
+        console.log({check})
+        if (check.data===false) {
+            const newGenderHour = { ...genderHour, addedDate: new Date().toISOString(), userName: 'develop', disabled: 0 }
+            const newId = await postData(wlServer, '/create/createOne', { entity: 'poolDaySchedule', values: newGenderHour })
+            const response = await getData(wlServer,`read/readOne/poolDaySchedule/${newId.data[0].Id}`)
+            return response.data
+        }
+        else{
+            const error = {number:500}
+            error.message = 'data exists'
+            throw new Error(error)
+        }
     }
     catch (error) {
         throw new Error(error)
@@ -116,7 +112,7 @@ async function deleteHour(obj, arr) {
     }
     try {
         let ans = await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: pull })
-        console.log('ans',ans.data);
+        console.log('ans', ans.data);
         return ans
     }
     catch (error) {
@@ -124,4 +120,4 @@ async function deleteHour(obj, arr) {
     }
 }
 
-module.exports = { addHour, updateHour, getHour, deleteDay, deleteHour, getAll }
+module.exports = { addGenderHour, updateHour, getHour, deleteDay, deleteHour, getAll }

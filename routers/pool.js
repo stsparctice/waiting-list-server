@@ -8,6 +8,7 @@ router.post('/add', express.json(),httpLogger(), async (req, res) => {
     try {
     
         let ans = await add(req.body.name, req.body.color, req.body.address,new Date())
+        console.log({ans})
         res.status(200).send(ans)
     }
     catch (error) {
