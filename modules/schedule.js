@@ -19,15 +19,53 @@ async function addGenderHour(genderHour) {
 
     try {
         let check = await postData(wlServer, '/read/exist/poolDaySchedule', { condition: genderHour })
-        console.log({check})
-        if (check.data===false) {
-            const newGenderHour = { ...genderHour, addedDate: new Date().toISOString(), userName: 'develop', disabled: 0 }
-            const newId = await postData(wlServer, '/create/createOne', { entity: 'poolDaySchedule', values: newGenderHour })
-            const response = await getData(wlServer,`read/readOne/poolDaySchedule/${newId.data[0].Id}`)
-            return response.data
+        console.log({ check })
+        if (check.data === false) {
+            let tempItem = { ...genderHour }
+            tempItem.endHour = tempItem.startHour
+            const { startHour, ...beforeItem } = tempItem
+            check = await postData(wlServer, '/read/exist/poolDaySchedule', { condition: beforeItem })
+            if (check.data === false) {
+                tempItem = { ...genderHour }
+                tempItem.startHour = tempItem.endHour
+                const { endHour, ...afterItem } = tempItem
+                check = await postData(wlServer, '/read/exist/poolDaySchedule', { condition: afterItem })
+                if (check.data === false) {
+                    const newGenderHour = { ...genderHour, addedDate: new Date().toISOString(), userName: 'develop', disabled: 0 }
+                    const newId = await postData(wlServer, '/create/createOne', { entity: 'poolDaySchedule', values: newGenderHour })
+                    const response = await getData(wlServer, `read/readOne/poolDaySchedule/${newId.data[0].Id}`)
+                    return response.data
+                }
+                else {
+                    const response = await postData(wlServer, '/read/readOne/poolDaySchedule', { condition: afterItem })
+                    if (response.data.id) {
+                        const updateItem = response.data
+                        const answer = updateOneSchedule({
+                            set: { startHour: genderHour.startHour },
+                            condition: { id: updateItem.id }
+                        })
+                        console.log({ answer })
+                        return answer
+                    }
+
+                }
+            }
+            else {
+                const response = await postData(wlServer, '/read/readOne/poolDaySchedule', { condition: beforeItem })
+                if (response.data.id) {
+                    const updateItem = response.data
+                    const answer = updateOneSchedule({
+                        set: { endHour: genderHour.endHour },
+                        condition: { id: updateItem.id }
+                    })
+                    console.log({ answer })
+                    return answer
+                }
+            }
+
         }
-        else{
-            const error = {number:500}
+        else {
+            const error = { number: 500 }
             error.message = 'data exists'
             throw new Error(error)
         }
@@ -38,24 +76,21 @@ async function addGenderHour(genderHour) {
 }
 
 // .פונקציה לעידכון שעה ממערכת השעות (מקבלת שם בריכה ,יום , ושעת התחלה)
-async function updateHour(obj, arr) {
-    let filter
-    let set
-    let arrayFilters
-    switch (arr) {
-        case 'activeHours':
-            filter = { 'poolName': obj.poolName }
-            set = { $set: { "schedule.$[d].activeHours.$[a]": { "startActiveHour": obj.new.startHour, "endActiveHour": obj.new.endHour } } }
-            arrayFilters = { arrayFilters: [{ 'a.startActiveHour': obj.old.startHour }, { 'd.day': obj.day }] }
-            break;
-        case 'hours':
-            filter = { 'poolName': obj.poolName }
-            set = { $set: { "schedule.$[d].hours.$[a]": { "startHour": obj.new.startHour, "endHour": obj.new.endHour } } }
-            arrayFilters = { arrayFilters: [{ 'a.startHour': obj.old.startHour }, { 'd.day': obj.day }] }
-            break;
-    }
+async function updateOneSchedule({ set, condition }) {
+
     try {
-        return await postData(wlServer, '/crud_db/update', { entity: 'SwimmingPool', filter: filter, update: set, options: arrayFilters })
+        const updateResponse = await postData(wlServer, '/update/updateOne', {
+            entity: 'poolDaySchedule',
+            set,
+            condition
+        })
+        console.log({ updateResponse })
+        if (updateResponse.status === 204) {
+            const updateItem = await postData(wlServer, '/read/readOne/poolDaySchedule', {
+                condition
+            })
+            return updateItem.data
+        }
     }
     catch (error) {
         throw new Error(error)
@@ -120,4 +155,4 @@ async function deleteHour(obj, arr) {
     }
 }
 
-module.exports = { addGenderHour, updateHour, getHour, deleteDay, deleteHour, getAll }
+module.exports = { addGenderHour, updateOneSchedule, getHour, deleteDay, deleteHour, getAll }
