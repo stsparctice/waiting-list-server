@@ -9,11 +9,15 @@ async function insertTeacher(obj) {
     try {
         const name = await postData(wlServer, '/read/readMany/teachers', { condition: { teacherName: obj.teacherName, disabled: 0 } })
         if (name.data[0]) {
-            throw new Error("the name does exist")
+            throw new Error("the name does not exist")
         }
         else {
-            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: [{ ...obj, AddedDate: new Date, username: 'develop', disabled: 0 }] })
-            return ans;
+            const newTeacher = {...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
+            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: newTeacher })
+            newTeacher.id = ans.data[0].Id
+            console.log({ans})
+            console.log(newTeacher)
+            return newTeacher;
         }
     }
     catch (error) {
