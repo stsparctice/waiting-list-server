@@ -4,7 +4,7 @@ const { deleteTeacher, insertTeacher,insertPoolToTeacher, updateTeacher, findOne
 const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
-router.post('/insertTeacher', express.json(), httpLogger(), async (req, res) => {
+router.post('/insert', express.json(), httpLogger(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
         if (ans) {
@@ -78,11 +78,11 @@ router.get('/findOneTeacher', async (req, res) => {
     }
 })
 
-router.get('/findAllTeachers', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
         const ans = await findAllTeachers()
         if (ans)
-            res.status(ans.status).send(ans.data)
+            res.status(200).send(ans.data)
         else
             res.status(500).send({ message: 'not found' })
     }

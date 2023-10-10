@@ -7,9 +7,9 @@ const { wlServer } = require('../services/servers')
 // insert  //
 async function insertTeacher(obj) {
     try {
-        const name = await postData(wlServer, '/read/readMany/teachers', { condition: { teacherName: obj.TeacherName, disabled: 0 } })
+        const name = await postData(wlServer, '/read/readMany/teachers', { condition: { teacherName: obj.teacherName, disabled: 0 } })
         if (name.data[0]) {
-            throw new Error("the name is exist")
+            throw new Error("the name does exist")
         }
         else {
             const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: [{ ...obj, AddedDate: new Date, username: 'develop', disabled: 0 }] })
