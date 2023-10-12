@@ -2,7 +2,7 @@ const { postData, getData } = require('../services/axios')
 const { rapidServer } = require('../services/servers')
 
 const patientType = {
-    PATID:'patID',
+    PATID: 'patID',
     ID: 'id',
     NAME: 'name',
     FAMILY_NAME: 'familyName',
@@ -12,7 +12,7 @@ const patientType = {
     COMMENTS: 'comments',
     BIRTHDATE: 'birthdate',
     SEX: 'sex',
-    PRICELIST:'priceList',
+    PRICELIST: 'priceList',
     KUPATHOLIM: 'kupatHolim'
 }
 
@@ -39,7 +39,7 @@ async function readDetails(id) {
                         patientType.CELL_PHONE,
                         patientType.COMMENTS,
                         patientType.BIRTHDATE,
-                        patientType.SEX, 
+                        patientType.SEX,
                         patientType.PRICELIST,
                         patientType.KUPATHOLIM]
                 },
@@ -47,12 +47,12 @@ async function readDetails(id) {
             ]
         })
         const { data } = patient
-        console.log({data})
+        console.log({ data })
         const { birthdate } = data
         console.log(birthdate)
         const ans = checkDate(birthdate)
         console.log({ ans })
-
+        data.birthdate = ans
         if (data[patientType.NAME] && data[patientType.FAMILY_NAME] && data[patientType.BIRTHDATE] != 'no date')
             return data
         return { error: 'one or more details are missing' }

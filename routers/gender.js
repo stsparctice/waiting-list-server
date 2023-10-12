@@ -1,7 +1,7 @@
 const express = require('express');
 const router = require('express').Router()
 const { httpLogger } = require('../services/logger/http-logger')
-const { add, find, update, deleted } = require('../modules/gender')
+const { add, find, update, deleted, findSex } = require('../modules/gender')
 
 router.get('/find/:name', httpLogger(), async (req, res) => {
 
@@ -51,6 +51,16 @@ router.post('/delete', express.json(), async (req, res) => {
     catch (error) {
         console.log({ error })
         res.status(500).send(error.message)
+    }
+})
+router.get('/getGender/:sex', async (req, res) => {
+    
+    try {
+        let ans = await findSex(req.params.sex)
+        res.status(200).send(ans)
+    }
+    catch (error) {
+        res.status(500).send(error)
     }
 })
 module.exports = router
