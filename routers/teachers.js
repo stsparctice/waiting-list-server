@@ -49,7 +49,7 @@ router.post('/deleteTeacher', express.json(), async (req, res) => {
 })
 
 //update //
-router.post('/updateTeacher', express.json(), async (req, res) => {
+router.post('/update', express.json(), async (req, res) => {
     try {
         const ans = await updateTeacher(req.body)
         if (ans) {
