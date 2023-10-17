@@ -18,7 +18,7 @@ const getData = async (server, url, query) => {
 }
 
 const postData = async (server, url, body) => {
-    console.log({body})
+    console.log({body, url})
     try {
        let response = await server.post(url, body);
        console.log({response})

@@ -5,15 +5,38 @@ const { getData, postData } = require('../services/axios');
 const { wlServer } = require('../services/servers')
 
 // insert  //
+async function existNameInDB(teacherName) {
+    const condition = { teacherName }
+    try {
+        const response = await postData(wlServer, '/read/exist/teachers', { condition })
+        if (response.status === 201) {
+            if (response.data.length > 0) {
+                return true
+            }
+            else{
+                return false
+            }
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+
 async function insertTeacher(obj) {
     try {
-        const name = await postData(wlServer, '/read/readMany/teachers', { condition: { teacherName: obj.TeacherName, disabled: 0 } })
-        if (name.data[0]) {
-            throw new Error("the name is exist")
+        const exist = await existNameInDB(obj.teacherName)
+        if (exist) {
+            throw new Error("the name exists in db")
         }
         else {
-            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: [{ ...obj, AddedDate: new Date, username: 'develop', disabled: 0 }] })
-            return ans;
+            const newTeacher = { ...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
+            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: newTeacher })
+            newTeacher.id = ans.data[0].Id
+            console.log({ ans })
+            console.log(newTeacher)
+            return newTeacher;
         }
     }
     catch (error) {
@@ -23,7 +46,7 @@ async function insertTeacher(obj) {
 
 async function insertPoolToTeacher(obj) {
     try {
-        const ans = await postData(wlServer, '/create/createOne', { entity: 'teachersPoolGenders' ,values:[{ ...obj, AddedDate: new Date, username: 'develop', disabled: 0 }]})
+        const ans = await postData(wlServer, '/create/createOne', { entity: 'teachersPoolGenders', values: [{ ...obj, AddedDate: new Date, username: 'develop', disabled: 0 }] })
         return ans
     }
     catch (error) {
@@ -34,9 +57,9 @@ async function insertPoolToTeacher(obj) {
 // delete //
 async function deleteTeacher(obj) {
     try {
-        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { TeacherName: obj.TeacherName, disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { id:obj.id} })
         if (ans.data[0]) {
-            let del = await postData(wlServer, '/delete/deleteOne', { entity: 'teachers', set: { DisabledDate: new Date, DisableUser: obj.DisableUser, DisableReason: obj.DisableReason }, condition: { TeacherName: obj.TeacherName } })
+            let del = await postData(wlServer, '/delete/deleteOne', { entity: 'teachers', set: { disabledDate: new Date(), disableUser: 'developer', disableReason: obj.DisableReason }, condition: { id: obj.id } })
             return del
             // deleteteacherschedule(ans.data[0]._id.toString())
             // addDisabledTeacher({ name: ans.data[0].name, phone: ans.data[0].phone, address: ans.data[0].address, annotation: ans.data[0].annotation, email: ans.data[0].email });
@@ -52,21 +75,20 @@ async function deleteTeacher(obj) {
 
 //update //
 async function updateTeacher(obj) {
-    const name = await postData(wlServer, '/read/readMany/teachers', { condition: { TeacherName: obj.TeacherName, disabled: 0 } })
-    if (name.data[0]) {
-        if (obj.set.name) {
-            if (obj.name !== obj.set.name) {
-                const teacher = await postData(wlServer, '/read/readMany/teachers', { condition: { TeacherName: obj.TeacherName, disabled: 0 } })
-                if (teacher.data[0]) {
-                    return "the name is exist";
-                }
+    const response = await postData(wlServer, '/read/readMany/teachers', { condition: { id: obj.id, disabled: 0 } })
+    console.log({ status: response.status, data: response.data })
+    if (response.status === 201) {
+        if (obj.teacherName!== response.data[0].teacherName){
+            const exist = await existNameInDB(obj.teacherName)
+            if (exist) {
+                throw new Error('the name does ')
             }
         }
-        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', set: obj.set, condition: { TeacherName: obj.TeacherName } })
+        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', set: obj, condition: { id: obj.id } })
         return ans
     }
     else {
-        throw new Error('not exist teacher')
+        throw new Error('teacher does not exist')
     }
 }
 
