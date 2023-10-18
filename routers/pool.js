@@ -44,7 +44,7 @@ router.post('/update', express.json(), async (req, res) => {
         res.status(ans.status).send(ans.data)
     }
     catch (error) {
-        res.status(404).send(error)
+        res.status(500).send(error)
 
     }
 })
@@ -54,7 +54,7 @@ router.post('/delete', express.json(), async (req, res) => {
         res.status(200).send(ans)
     }
     catch(error){
-        res.status(404).send(error)
+        res.status(500).send(error)
 
     }
 })
