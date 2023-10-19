@@ -7,7 +7,7 @@ router.get('/find', async (req, res) => {
 console.log('find')
     try {
         patient= await readDetails(req.query.id)
-        console.log('patient',patient);
+        console.log('patient',patient.entitiesFields);
         res.status(200).send(patient)
     }
     catch (error) {
