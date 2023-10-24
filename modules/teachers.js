@@ -13,7 +13,7 @@ async function existNameInDB(teacherName) {
             if (response.data.length > 0) {
                 return true
             }
-            else{
+            else {
                 return false
             }
         }
@@ -22,21 +22,48 @@ async function existNameInDB(teacherName) {
         throw error
     }
 }
+function sendTeachers(obj) {
+    const gender = {
+        teacherId: "teacherId",
+        genderId: obj.teachersGenders[0].item.id,
+        addedDate: new Date(),
+        userName: "develop",
+        disabled: 0
+    }
+    const level = {
+        teacherId: "teacherId",
+        levelId: obj.teachersLevels[0].item.id,
+        addedDate: new Date(),
+        userName: "develop",
+        disabled: 0
+    }
+    const pool = {
+        teacherId: "teacherId",
+        poolId: obj.teachersPools[0].item.id,
+        addedDate: new Date(),
+        userName: "develop",
+        disabled: 0
+    }
+
+    obj.teachersGenders = gender
+    obj.teachersLevels = level
+    obj.teachersPools = pool
+    return obj
+}
 
 
 async function insertTeacher(obj) {
     try {
-        const exist = await existNameInDB(obj.teacherName)
+        const object = sendTeachers(obj)
+        const exist = await existNameInDB(object.teacherName)
         if (exist) {
             throw new Error("the name exists in db")
         }
         else {
-            const newTeacher = { ...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
-            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: newTeacher })
-            newTeacher.id = ans.data[0].Id
-            console.log({ ans })
-            console.log(newTeacher)
-            return newTeacher;
+            const newTeacher = { ...object, addedDate: new Date(), username: 'develop', disabled: 0 }
+            const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
+            console.log({ ans }, 'ppppppppppppppppppppppppp');
+            return ans.data;
         }
     }
     catch (error) {
@@ -57,7 +84,7 @@ async function insertPoolToTeacher(obj) {
 // delete //
 async function deleteTeacher(obj) {
     try {
-        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { id:obj.id} })
+        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { id: obj.id } })
         if (ans.data[0]) {
             let del = await postData(wlServer, '/delete/deleteOne', { entity: 'teachers', set: { disabledDate: new Date(), disableUser: 'developer', disableReason: obj.DisableReason }, condition: { id: obj.id } })
             return del
@@ -78,7 +105,7 @@ async function updateTeacher(obj) {
     const response = await postData(wlServer, '/read/readMany/teachers', { condition: { id: obj.id, disabled: 0 } })
     console.log({ status: response.status, data: response.data })
     if (response.status === 201) {
-        if (obj.teacherName!== response.data[0].teacherName){
+        if (obj.teacherName !== response.data[0].teacherName) {
             const exist = await existNameInDB(obj.teacherName)
             if (exist) {
                 throw new Error('the name does ')
@@ -157,4 +184,46 @@ async function findAllDisabledTeachers() {
     }
 }
 
-module.exports = { insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
+async function findTeacherByPoolAndGender(obj) {
+    try {
+        const gender = await postData(wlServer, '/read/readMany/teachersGenders', { condition: { genderId: obj.genderId } })
+        const pool = await postData(wlServer, '/read/readMany/teachersPools', { condition: { poolId: obj.poolId } })
+        if (gender.data && pool.data) {
+            let answer = []
+            for (let i = 0; i < gender.data.length; i++) {
+                for (let j = 0; j < pool.data.length; j++) {
+                    if (gender.data[i].teacherId.id == pool.data[j].teacherId.id)
+                        answer.push(pool.data[j].teacherId)
+                }
+            }
+            let ans = []
+            if (obj.levelId) {
+                ans = findByLevel(answer, obj.levelId)
+            }
+            console.log(answer, 'answer');
+            if (ans.length > 0)
+                return ans
+            return answer
+        }
+        return "data does not exist"
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+async function findByLevel(teacher, levelId) {
+    const level = await postData(wlServer, '/read/readMany/teachersLevels', { condition: { levelId: levelId } })
+    if (level.data) {
+        let ans = []
+        for (let i = 0; i < teacher.length; i++) {
+            for (let j = 0; j < level.data.length; j++) {
+                if (teacher[i].id == level.data[j].teacherId.id)
+                    ans.push(level.data[j].teacherId)
+            }
+        }
+        return ans
+    }
+    return "data does not exist"
+}
+module.exports = { findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }

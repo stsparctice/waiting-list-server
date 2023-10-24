@@ -1,14 +1,16 @@
 const express = require('express')
 const router = express.Router()
-const { deleteTeacher, insertTeacher,insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers } = require('../modules/teachers')
+const { deleteTeacher, insertTeacher,insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender } = require('../modules/teachers')
 const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
 router.post('/insert', express.json(), httpLogger(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
-        if (ans.id) {
+        console.log(ans,'in the router');
+        if (ans) {
             res.status(200).send(ans)
+        
         }
         else {
             res.status(500).send({ message: 'no create' })
@@ -112,6 +114,20 @@ router.get('/findAllDisabledTeachers', async (req, res) => {
         const ans = await findAllDisabledTeachers()
         if (ans)
             res.status(ans.status).send(ans.data)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/findTeacherByPoolAndGender', express.json(), async (req, res) => {
+    try {
+        const ans = await findTeacherByPoolAndGender(req.body)
+        console.log(ans,'ans');
+        if (ans)
+            res.status(201).send(ans)
         else
             res.status(500).send({ message: 'not found' })
     }
