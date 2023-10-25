@@ -3,7 +3,7 @@ const app = express();
 require('dotenv').config()
 const { deleteTeacherSchedule } = require('./teacher_schedule')
 const { dbServer, getData, postData } = require('../services/axios');
-
+const {checkObj}=require('../services/validation')
 const teacherType = {
     ID: { name: 'id', type: 'number', required: true },
     TeacherName: { name: 'teacherName', type: 'nvarchar', required: true },
@@ -22,25 +22,8 @@ const teacherType = {
 
 // insert  //
 async function insertTeacher(obj) {
-    let flag=false;
-    let missingValues=[]
+    checkObj(teacherType,obj)
     try {
-        for (let key in teacherType) {
-            if(teacherType[key].required==true){
-                for(let key2 in obj){
-                    if(teacherType[key].name.toLocaleLowerCase()==key2.toLocaleLowerCase()){
-                        flag=true;
-                    }
-                }
-                if(flag==false){
-                    missingValues.push(teacherType[key].name)
-                }
-                flag=false
-            }
-        }
-        if(missingValues.length>0){
-            throw new Error(`The missing values are:${missingValues}`)
-    }
         const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (name.data[0]) {
             throw new Error("the name is exist")

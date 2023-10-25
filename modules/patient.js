@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { getData, postData, dbServer } = require('../services/axios')
+const { getData, postData, dbServer } = require('../services/axios');
+const { checkObj } = require('../services/validation');
 const patientType={
     ID: { name: 'id', type: 'number', required: true },
     IdentityNumber: { name: 'identityNumber', type: 'number', required: true },
@@ -25,6 +26,7 @@ const patientType={
 // work for patient table
 async function insertPatient(body) {
     try {
+checkObj(patientType,body)
         const patient = await postData(dbServer, '/create/createOne', {
             entity: 'Patient', values: [{
                 IdentityCard: body.id
