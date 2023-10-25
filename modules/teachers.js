@@ -3,9 +3,26 @@ const app = express();
 require('dotenv').config()
 const { deleteTeacherSchedule } = require('./teacher_schedule')
 const { dbServer, getData, postData } = require('../services/axios');
+const {checkObj}=require('../services/validation')
+const teacherType = {
+    ID: { name: 'id', type: 'number', required: true },
+    TeacherName: { name: 'teacherName', type: 'nvarchar', required: true },
+    Phone: { name: 'phone', type: 'nvarchar', required: false },
+    Email: { name: 'email', type: 'nvarchar', required: false },
+    Address: { name: 'address', type: 'nvarchar', required: false },
+    City: { name: 'city', type: 'nvarchar', required: false },
+    Gender: { name: 'gender', type: 'number', required: false },
+    Annotation: { name: 'annotation ', type: 'nvarchar', required: false },
+    AddedDate: { name: 'addedDate', type: 'datetime ', required: true },
+    UserName: { name: 'userName', type: 'nvarchar', required: true },
+    Disabled: { name: 'disabled', type: 'number', required: false },
+    DisabledUser: { name: 'disabledUser', type: 'nvarchar', required: false },
+    DisableReason: { name: 'disableReason', type: 'nvarchar', required: false }
+}
 
 // insert  //
 async function insertTeacher(obj) {
+    checkObj(teacherType,obj)
     try {
         const name = await postData(dbServer, '/read/readMany/Teachers', { condition: { TeacherName: `'${obj.TeacherName}'`, Disabled: 0 } })
         if (name.data[0]) {

@@ -1,9 +1,32 @@
 require('dotenv').config();
-const { getData, postData, dbServer } = require('../services/axios')
-
+const { getData, postData, dbServer } = require('../services/axios');
+const { checkObj } = require('../services/validation');
+const patientType={
+    ID: { name: 'id', type: 'number', required: true },
+    IdentityNumber: { name: 'identityNumber', type: 'number', required: true },
+    firstName: { name: 'firstName', type: 'nvarchar', required: true },
+    lastName: { name: 'lastName', type: 'nvarchar', required: true },
+    phone1: { name: 'phone1', type: 'nvarchar', required: true },
+    phone2: { name: 'phone2', type: 'nvarchar', required: false },
+    birthDate : { name: 'birthDate ', type: 'dataTime', required: true },
+    sex : { name: 'sex ', type: 'number', required: true },
+    priceList: { name: 'priceList', type: 'number', required: false },
+    evaluated : { name: 'evaluated ', type: 'bit', required: true },
+    lastEvaluationDate: { name: 'lastEvaluationDate', type: 'dateTime', required: true },
+    noEvaluation : { name: 'noEvaluation ', type: 'bit', required: false },
+    noEvaluationUser  : { name: 'noEvaluationUser  ', type: 'nvarchar', required: false },
+    sendMedDocumentsDate  : { name: 'sendMedDocumentsDate  ', type: 'dataTime', required: true },
+    addedDate  : { name: 'addedDate  ', type: 'dataTime', required: true },
+    userName  : { name: 'userName  ', type: 'nvarchar', required: true },
+    disabled  : { name: 'disabled  ', type: 'bit', required: true },
+    disabledDate  : { name: 'disabledDate  ', type: 'dateTime', required: false },
+    disableUser   : { name: 'disableUser   ', type: 'nvarcher', required: false },
+    disableReason   : { name: 'disableReason   ', type: 'nvarchar', required: false },
+}
 // work for patient table
 async function insertPatient(body) {
     try {
+checkObj(patientType,body)
         const patient = await postData(dbServer, '/create/createOne', {
             entity: 'Patient', values: [{
                 IdentityCard: body.id
