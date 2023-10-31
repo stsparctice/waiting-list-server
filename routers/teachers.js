@@ -7,9 +7,9 @@ const { httpLogger } = require('../services/logger/http-logger')
 router.post('/insert', express.json(), httpLogger(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
-        console.log(ans,'in the router');
+       
         if (ans) {
-            res.status(200).send(ans)
+            res.status(201).send(ans)
         
         }
         else {

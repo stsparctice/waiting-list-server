@@ -9,7 +9,7 @@ async function existNameInDB(teacherName) {
     const condition = { teacherName }
     try {
         const response = await postData(wlServer, '/read/exist/teachers', { condition })
-        if (response.status === 201) {
+        if (response.status === 200) {
             if (response.data.length > 0) {
                 return true
             }
@@ -54,16 +54,18 @@ function sendTeachers(obj) {
 
 async function insertTeacher(obj) {
     try {
-        const object = sendTeachers(obj)
-        const exist = await existNameInDB(object.teacherName)
+        const exist = await existNameInDB(obj.teacherName)
         if (exist) {
             throw new Error("the name exists in db")
         }
         else {
-            const newTeacher = { ...object, addedDate: new Date(), username: 'develop', disabled: 0 }
+           
+            const newTeacher = { ...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
             const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
-            console.log({ ans }, 'ppppppppppppppppppppppppp');
-            return ans.data;
+            if (ans.status === 201) {
+                const result ={id:ans.data.result, ...newTeacher}
+                return result;
+            }
         }
     }
     catch (error) {

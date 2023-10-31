@@ -10,11 +10,13 @@ const teacherSwagger = require('./swagger/teacher.json');
 const genderSwagger = require('./swagger/gender.json');
 const patientRouter = require('./routers/patient')
 const poolRouter = require('./routers/pool')
+const levelRouter = require('./routers/level')
 const genderRouter = require('./routers/gender')
 const scheduleRouter = require('./routers/schedule')
 const teacherScheduleRouter = require('./routers/teacherSchedule')
 const teachersRouter = require('./routers/teachers')
 const rapidMedRouter = require('./routers/rapidMed')
+
 
 
 
@@ -32,13 +34,14 @@ app.use('/api-docs-dynamic', function (req, res, next) {
   next();
 }, swaggerUi.serveFiles(), swaggerUi.setup());
 
-app.use('/pool', poolRouter)
-app.use('/patient', patientRouter);
-app.use('/gender', genderRouter)
+app.use('/pools', poolRouter)
+app.use('/levels', levelRouter)
+app.use('/patients', patientRouter);
+app.use('/genders', genderRouter)
 app.use('/rapidMed', rapidMedRouter)
 app.use('/teacher_schedule', teacherScheduleRouter)
 app.use('/teachers', teachersRouter)
-app.use('/schedule', scheduleRouter)
+app.use('/schedules', scheduleRouter)
 
 app.set('view engine', 'ejs')
 
