@@ -30,7 +30,7 @@ async function update(data) {
             {
                 entity: 'levels',
                 condition: { id: data.id },
-                set: data
+                data
             })
         console.log(ans)
         return ans

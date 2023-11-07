@@ -81,7 +81,7 @@ async function updateOneSchedule({ set, condition }) {
     try {
         const updateResponse = await postData(wlServer, '/update/updateOne', {
             entity: 'poolDaySchedule',
-            set,
+            data:set,
             condition
         })
         console.log({ updateResponse })

@@ -10,7 +10,7 @@ async function existNameInDB(teacherName) {
     try {
         const response = await postData(wlServer, '/read/exist/teachers', { condition })
         if (response.status === 200) {
-            if (response.data.length > 0) {
+            if (response.data ===true ) {
                 return true
             }
             else {
@@ -22,34 +22,6 @@ async function existNameInDB(teacherName) {
         throw error
     }
 }
-function sendTeachers(obj) {
-    const gender = {
-        teacherId: "teacherId",
-        genderId: obj.teachersGenders[0].item.id,
-        addedDate: new Date(),
-        userName: "develop",
-        disabled: 0
-    }
-    const level = {
-        teacherId: "teacherId",
-        levelId: obj.teachersLevels[0].item.id,
-        addedDate: new Date(),
-        userName: "develop",
-        disabled: 0
-    }
-    const pool = {
-        teacherId: "teacherId",
-        poolId: obj.teachersPools[0].item.id,
-        addedDate: new Date(),
-        userName: "develop",
-        disabled: 0
-    }
-
-    obj.teachersGenders = gender
-    obj.teachersLevels = level
-    obj.teachersPools = pool
-    return obj
-}
 
 
 async function insertTeacher(obj) {
@@ -60,7 +32,7 @@ async function insertTeacher(obj) {
         }
         else {
            
-            const newTeacher = { ...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
+            const newTeacher = { ...obj, addedDate: new Date(), userName: 'develop', disabled: 0 }
             const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
             if (ans.status === 201) {
                 const result ={id:ans.data.result, ...newTeacher}
@@ -104,16 +76,16 @@ async function deleteTeacher(obj) {
 
 //update //
 async function updateTeacher(obj) {
+    console.log({obj})
+    const exist = await existNameInDB(obj.teacherName)
+    console.log({exist})
+    if (exist) {
+        throw new Error("the name exists in db")
+    }
     const response = await postData(wlServer, '/read/readMany/teachers', { condition: { id: obj.id, disabled: 0 } })
     console.log({ status: response.status, data: response.data })
     if (response.status === 201) {
-        if (obj.teacherName !== response.data[0].teacherName) {
-            const exist = await existNameInDB(obj.teacherName)
-            if (exist) {
-                throw new Error('the name does ')
-            }
-        }
-        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', set: obj, condition: { id: obj.id } })
+        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
         return ans
     }
     else {
@@ -134,10 +106,11 @@ async function updateTeacher(obj) {
 
 
 // read //
-async function findOneTeacher(obj) {
+async function findOneTeacher(query) {
     try {
-        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { TeacherName: obj.TeacherName, disabled: 0 } })
-        if (ans.data[0])
+        const ans = await getData(wlServer, '/read/readOne/teachers', query)
+        console.log({ans})
+        if (ans.data)
             return ans;
         return 'the teacher does not exist'
     }

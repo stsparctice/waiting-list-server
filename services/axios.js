@@ -7,7 +7,7 @@ const getData = async (server, url, query) => {
     let response;
     try {
         if(query){
-            url+=`?${buildConditionFromQuery(query)}`
+            url+=`?${buildQueryFromCondition(query)}`
         }
         response = await server.get(url);
     }
@@ -30,7 +30,7 @@ const postData = async (server, url, body) => {
     }
 }
 
-const buildConditionFromQuery = (query)=>{
+const buildQueryFromCondition = (query)=>{
     const entries = Object.entries(query)
     const queryArray = entries.reduce((q, ent)=>q=[...q,`${ent[0]}=${ent[1]}`], [])
     const queryString = queryArray.join('&')

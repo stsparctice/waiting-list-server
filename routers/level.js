@@ -39,6 +39,7 @@ router.get('/getAll',  async (req, res) => {
 })
 router.post('/update', express.json(), async (req, res) => {
     try {
+        console.log(req.body)
         let ans = await update(req.body)
         console.log({ans})
         res.status(ans.status).send(ans.data)

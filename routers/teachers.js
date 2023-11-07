@@ -53,6 +53,8 @@ router.post('/deleteTeacher', express.json(), async (req, res) => {
 //update //
 router.post('/update', express.json(), async (req, res) => {
     try {
+        console.log('update')
+        
         const ans = await updateTeacher(req.body)
         if (ans) {
             res.status(ans.status).send(ans.data)
