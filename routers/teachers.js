@@ -1,16 +1,16 @@
 const express = require('express')
 const router = express.Router()
-const { deleteTeacher, insertTeacher,insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender } = require('../modules/teachers')
+const { deleteTeacher, insertTeacher, insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender, findGendersAndDaysByTeachers } = require('../modules/teachers')
 const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
 router.post('/insert', express.json(), httpLogger(), async (req, res) => {
     try {
         const ans = await insertTeacher(req.body)
-       
+
         if (ans) {
             res.status(201).send(ans)
-        
+
         }
         else {
             res.status(500).send({ message: 'no create' })
@@ -21,7 +21,7 @@ router.post('/insert', express.json(), httpLogger(), async (req, res) => {
     }
 })
 
-router.post('/addPoolToTeacher', express.json(), async(req, res)=>{
+router.post('/addPoolToTeacher', express.json(), async (req, res) => {
     try {
         const ans = await insertPoolToTeacher(req.body)
         if (ans) {
@@ -103,7 +103,7 @@ router.post('/findTeacherByCondition', express.json(), async (req, res) => {
             res.status(500).send({ message: 'not found' })
     }
     catch (error) {
-        console.log({error})
+        console.log({ error })
         res.status(500).send(error.message)
     }
 })
@@ -125,7 +125,22 @@ router.get('/findAllDisabledTeachers', async (req, res) => {
 router.post('/findTeacherByPoolAndGender', express.json(), async (req, res) => {
     try {
         const ans = await findTeacherByPoolAndGender(req.body)
-        console.log(ans,'ans');
+        console.log(ans, 'ans');
+        if (ans)
+            res.status(201).send(ans)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/findGendersAndDaysByTeachers', express.json(), async (req, res) => {
+    try {
+        console.log(req.body,'rrrrrrrrrrrrrrr');
+        const ans = await findGendersAndDaysByTeachers(req.body)
+        console.log(ans, 'ans');
         if (ans)
             res.status(201).send(ans)
         else

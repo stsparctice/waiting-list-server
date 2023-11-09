@@ -59,11 +59,11 @@ async function insertTeacher(obj) {
             throw new Error("the name exists in db")
         }
         else {
-           
+
             const newTeacher = { ...obj, addedDate: new Date(), username: 'develop', disabled: 0 }
             const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
             if (ans.status === 201) {
-                const result ={id:ans.data.result, ...newTeacher}
+                const result = { id: ans.data.result, ...newTeacher }
                 return result;
             }
         }
@@ -228,4 +228,29 @@ async function findByLevel(teacher, levelId) {
     }
     return "data does not exist"
 }
-module.exports = { findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
+async function findGendersAndDaysByTeachers(id) {
+    try {
+        console.log(id, 'id33333');
+        const gender = await postData(wlServer, '/read/readMany/teachersGenders', { condition: { teacherId: id.id } })
+        console.log(gender.data, 'gender');
+        let ids = gender.data.map(g =>
+            g.genderId.id
+        )
+        console.log(ids, 'ids');
+        const days = []
+        for (let i = 0; i < ids.length; i++) {
+            let day = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition: { genderId: ids[i] } })
+            days.push(day.data[0])
+        }
+        console.log(days.data, 'days');
+        if (days)
+            return days
+        else
+            return "not found!"
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+module.exports = { findGendersAndDaysByTeachers, findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
