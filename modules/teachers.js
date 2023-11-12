@@ -10,7 +10,7 @@ async function existNameInDB(teacherName) {
     try {
         const response = await postData(wlServer, '/read/exist/teachers', { condition })
         if (response.status === 200) {
-            if (response.data ===true ) {
+            if (response.data === true) {
                 return true
             }
             else {
@@ -31,11 +31,11 @@ async function insertTeacher(obj) {
             throw new Error("the name exists in db")
         }
         else {
-           
+
             const newTeacher = { ...obj, addedDate: new Date(), userName: 'develop', disabled: 0 }
             const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
             if (ans.status === 201) {
-                const result ={id:ans.data.result, ...newTeacher}
+                const result = { id: ans.data.result, ...newTeacher }
                 return result;
             }
         }
@@ -76,15 +76,16 @@ async function deleteTeacher(obj) {
 
 //update //
 async function updateTeacher(obj) {
-    console.log({obj})
-    const exist = await existNameInDB(obj.teacherName)
-    console.log({exist})
-    if (exist) {
-        throw new Error("the name exists in db")
-    }
-    const response = await postData(wlServer, '/read/readMany/teachers', { condition: { id: obj.id, disabled: 0 } })
-    console.log({ status: response.status, data: response.data })
-    if (response.status === 201) {
+    const response = await getData(wlServer, '/read/readOne/teachers', { id: obj.id, disabled: 0 })
+    if (response.status === 200) {
+        const origin = response.data
+        if (origin.teacherName !== obj.teacherName) {
+            const exist = await existNameInDB(obj.teacherName)
+            console.log({ exist })
+            if (exist) {
+                throw new Error("the name exists in db")
+            }
+        }
         const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
         return ans
     }
@@ -93,23 +94,12 @@ async function updateTeacher(obj) {
     }
 }
 
-// // insert To SqlDelete Teacher //
-// async function addDisabledTeacher(obj) {
-//     try {
-//         const ans = await postData(wlServer, '/create_db/createOne', { table_name: 'teachers', values: `'${obj.name}','${obj.phone}','${obj.address.city}'` })
-//         return ans
-//     }
-//     catch (error) {
-//         throw error
-//     }
-// }
-
 
 // read //
 async function findOneTeacher(query) {
     try {
         const ans = await getData(wlServer, '/read/readOne/teachers', query)
-        console.log({ans})
+        console.log({ ans })
         if (ans.data)
             return ans;
         return 'the teacher does not exist'

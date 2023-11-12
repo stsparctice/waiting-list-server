@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { addGenderHour, deleteDay, deleteHour, getAll, updateHour } = require('../modules/schedule')
+const { addGenderHour, deleteDay, deleteHour, getAll, updateOneSchedule } = require('../modules/schedule')
 const { sortSchedule } = require('../modules/checkScedule')
 
 // בקשה לקבלת  שעות פעילות בריכה מסוימת
@@ -127,10 +127,9 @@ router.post('/addGenderHour', express.json(), async (req, res) => {
 
 
 // בקשה לעידכון שעת פעילות בריכה לפי יום (מקבלת בריכה,יום ושני אוביקטים :האוביקט לעידכון והאוביקט החדש-כל אוביקט מכיל :שעת התחלה ושעת סיום)
-router.post('/updateActiveHourByDay', express.json(), async (req, res) => {
+router.post('/update', express.json(), async (req, res) => {
     try {
-        let arr = "activeHours"
-        const ans = await updateHour(req.body, arr)
+        const ans = await updateOneSchedule(req.body)
         res.status(200).send(ans.data)
     }
     catch (error) {

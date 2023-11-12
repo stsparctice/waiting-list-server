@@ -76,13 +76,13 @@ async function addGenderHour(genderHour) {
 }
 
 // .פונקציה לעידכון שעה ממערכת השעות (מקבלת שם בריכה ,יום , ושעת התחלה)
-async function updateOneSchedule({ set, condition }) {
+async function updateOneSchedule(data) {
 
     try {
         const updateResponse = await postData(wlServer, '/update/updateOne', {
             entity: 'poolDaySchedule',
-            data:set,
-            condition
+            data,
+            
         })
         console.log({ updateResponse })
         if (updateResponse.status === 204) {

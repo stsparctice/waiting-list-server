@@ -9,6 +9,7 @@ const getData = async (server, url, query) => {
         if(query){
             url+=`?${buildQueryFromCondition(query)}`
         }
+        console.log({url})
         response = await server.get(url);
     }
     catch (error) {
