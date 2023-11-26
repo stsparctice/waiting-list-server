@@ -253,4 +253,21 @@ async function findGendersAndDaysByTeachers(id) {
     }
 }
 
-module.exports = { findGendersAndDaysByTeachers, findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
+
+async function findHouerByGenderAndDay(condition) {
+    try {
+        console.log(condition,( 'genderId, day'));
+        const ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition })
+        console.log(ans, 'ans');
+        if (ans.data)
+            return ans.data
+        else
+            return 'not found'
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+
+module.exports = { findHouerByGenderAndDay, findGendersAndDaysByTeachers, findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
