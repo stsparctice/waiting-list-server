@@ -6,22 +6,7 @@ const {wlServer} = require('../services/servers')
 async function insertPatient(body) {
     try {
         const patient = await postData(wlServer, '/create/createOne', {
-            entity: 'Patient', values: [{
-                IdentityCard: body.id
-                , FirstName: body.firstName
-                , LastName: body.lastName
-                , Phone1: body.phone1
-                , Phone2: body.phone2
-                , BirthDate: body.birthDate
-                , Sex: body.sex
-                , PriceList: body.priceList
-                , Evaluated: body.evaluated
-                , LastEvaluationDate: body.lastEvaluationDate
-                , SendMedDocumentsDate: body.sendMedDocumentsDate
-                , addedDate: new Date()
-                , UserName: body.userName
-                , Disabled: 0
-            }]
+            entity: 'patient', values: [body]
         })
         return patient;
     } catch (error) {
