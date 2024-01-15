@@ -155,4 +155,18 @@ async function deleteHour(obj, arr) {
     }
 }
 
-module.exports = { addGenderHour, updateOneSchedule, getHour, deleteDay, deleteHour, getAll }
+async function findGenderDaysByPools(condition) {
+    try {
+        console.log(condition);
+        const ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition })
+        console.log(ans, 'ans');
+        if (ans.data)
+            return ans.data
+        else
+            return 'not found'
+    }
+    catch (error) {
+        throw error
+    }
+}
+module.exports = { addGenderHour, updateOneSchedule, getHour, deleteDay, deleteHour, getAll,findGenderDaysByPools }

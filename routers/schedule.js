@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { addGenderHour, deleteDay, deleteHour, getAll, updateHour } = require('../modules/schedule')
+const { addGenderHour, deleteDay, deleteHour, getAll, findGenderDaysByPools} = require('../modules/schedule')
 const { sortSchedule } = require('../modules/checkScedule')
 
 // בקשה לקבלת  שעות פעילות בריכה מסוימת
@@ -183,5 +183,20 @@ router.post('/deleteHourByDay', express.json(), async (req, res) => {
         res.status(404).send(error)
     }
 })
-
+//מביא ימים לפי ברכה וקבוצה
+router.post('/findGenderDaysByPools', express.json(), async (req, res) => {
+    try {
+        //{condition:{swimmingPoolId:1,genderId:1}}
+        console.log(req.body,'rrrrrrrrrrrrrrr');
+        const ans = await findGenderDaysByPools(req.body.condition)
+        console.log(ans, 'ans');
+        if (ans)
+            res.status(201).send(ans)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
 module.exports = router
