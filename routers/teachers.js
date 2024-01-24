@@ -93,7 +93,7 @@ router.get('/teacherlevels/:teacherid', async (req, res) => {
             res.status(200).send(result)
         }
         else
-            res.status(404).send({ message: 'not found' })
+            res.status(200).send([])
     }
     catch (error) {
         res.status(500).send(error.message)
@@ -108,7 +108,7 @@ router.get('/teachergenders/:teacherid', async (req, res) => {
             res.status(200).send(result)
         }
         else
-            res.status(404).send({ message: 'not found' })
+            res.status(200).send([])
     }
     catch (error) {
         res.status(500).send(error.message)
@@ -123,7 +123,7 @@ router.get('/teacherpools/:teacherid', async (req, res) => {
             res.status(200).send(result)
         }
         else
-            res.status(404).send({ message: 'not found' })
+            res.status(200).send([])
     }
     catch (error) {
         res.status(500).send(error.message)
