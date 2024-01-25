@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { deleteTeacher, insertTeacher, insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender, findGendersAndDaysByTeachers, findHouerByGenderAndDay } = require('../modules/teachers')
+const {  getTeachersLevels, getTeachersGenders, getTeachersPools } = require('../modules/teachers')
 const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
@@ -54,7 +55,7 @@ router.post('/deleteTeacher', express.json(), async (req, res) => {
 router.post('/update', express.json(), async (req, res) => {
     try {
         console.log('update')
-        
+
         const ans = await updateTeacher(req.body)
         if (ans) {
             res.status(ans.status).send(ans.data)
@@ -75,7 +76,52 @@ router.get('/findOneTeacher', async (req, res) => {
         if (ans)
             res.status(ans.status).send(ans.data)
         else
-            res.status(500).send({ message: 'not found' })
+            res.status(404).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.get('/teacherlevels/:teacherid', async (req, res) => {
+    try {
+        const { teacherid } = req.params
+        const result = await getTeachersLevels(teacherid)
+        if (result) {
+            res.status(200).send(result)
+        }
+        else
+            res.status(200).send([])
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.get('/teachergenders/:teacherid', async (req, res) => {
+    try {
+        const { teacherid } = req.params
+        const result = await getTeachersGenders(teacherid)
+        if (result) {
+            res.status(200).send(result)
+        }
+        else
+            res.status(200).send([])
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.get('/teacherpools/:teacherid', async (req, res) => {
+    try {
+        const { teacherid } = req.params
+        const result = await getTeachersPools(teacherid)
+        if (result) {
+            res.status(200).send(result)
+        }
+        else
+            res.status(200).send([])
     }
     catch (error) {
         res.status(500).send(error.message)

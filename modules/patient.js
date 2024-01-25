@@ -44,8 +44,8 @@ async function insertRestDetailes(body) {
             _ = await postData(wlServer, '/create/createMany', {
                 entity: 'PatientsComment', values: body.comments.map(c => ({
                     patientId: id
-                    , comment: c
-                    , addedDate: new Date()
+                    , comment: c.text
+                    , addedDate: c.date
                     , UserName: body.userName
                     , Disabled: 0
                 }))

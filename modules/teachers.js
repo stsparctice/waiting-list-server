@@ -177,6 +177,57 @@ async function findTeacherByPoolAndGender(obj) {
     }
 }
 
+async function getTeachersLevels(teacherId) {
+    try {
+        const response = await postData(wlServer, '/read/readMany/teachersLevels', { condition: { teacherId } })
+        if (response.status === 200) {
+            const { data } = response
+            if (data.length > 0) {
+                const levels = data.map(({ teacherId, ...rest }) => rest)
+                return levels
+            }
+
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+async function getTeachersGenders(teacherId) {
+    try {
+        const response = await postData(wlServer, '/read/readMany/teachersGenders', { condition: { teacherId } })
+        if (response.status === 200) {
+            const { data } = response
+            if (data.length > 0) {
+                const levels = data.map(({ teacherId, ...rest }) => rest)
+                return levels
+            }
+
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+async function getTeachersPools(teacherId) {
+    try {
+        const response = await postData(wlServer, '/read/readMany/teachersPools', { condition: { teacherId } })
+        if (response.status === 200) {
+            const { data } = response
+            if (data.length > 0) {
+                const levels = data.map(({ teacherId, ...rest }) => rest)
+                return levels
+            }
+
+        }
+    }
+    catch (error) {
+        throw error
+    }
+}
+
 async function findByLevel(teacher, levelId) {
     const level = await postData(wlServer, '/read/readMany/teachersLevels', { condition: { levelId: levelId } })
     if (level.data) {
@@ -219,7 +270,7 @@ async function findGendersAndDaysByTeachers(id) {
 
 async function findHouerByGenderAndDay(condition) {
     try {
-        console.log(condition,( 'genderId, day'));
+        console.log(condition, ('genderId, day'));
         const ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition })
         console.log(ans, 'ans');
         if (ans.data)
@@ -233,4 +284,7 @@ async function findHouerByGenderAndDay(condition) {
 }
 
 
-module.exports = { findHouerByGenderAndDay, findGendersAndDaysByTeachers, findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers }
+module.exports = { findHouerByGenderAndDay, findGendersAndDaysByTeachers,
+     findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher,
+      updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition,
+       findAllDisabledTeachers, getTeachersGenders, getTeachersLevels, getTeachersPools}
