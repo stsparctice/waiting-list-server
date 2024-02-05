@@ -44,60 +44,60 @@ async function insertRestDetailes(body) {
             _ = await postData(wlServer, '/create/createMany', {
                 entity: 'PatientsComment', values: body.comments.map(c => ({
                     patientId: id
-                    , comment: c
-                    , addedDate: new Date()
+                    , comment: c.text
+                    , addedDate: c.date
                     , UserName: body.userName
                     , Disabled: 0
                 }))
             })
         }
         if (body.genders.length > 0) {
-            let gendersId = []
-            for (let g of body.genders) {
-                let gender = await getData(wlServer, `/read/readOne/Genders?name='${g}'`)
-                console.log(gender);
-                gender = gender.data[0].Id
-                gendersId.push(gender)
-            }
-            console.log(gendersId);
+            // let gendersId = []
+            // for (let g of body.genders) {
+            //     let gender = await getData(wlServer, `/read/readOne/Genders?name='${g}'`)
+            //     console.log(gender);
+            //     gender = gender.data[0].Id
+            //     gendersId.push(gender)
+            // }
+            // console.log(gendersId);
             await postData(wlServer, '/create/createMany', {
-                entity: 'PatientsGenders', values: gendersId.map(g => ({
+                entity: 'PatientsGenders', values: body.genders.map(g => ({
                     patientId: id
-                    , genderId: g
+                    , genderId: g.genderId
                     , addedDate: new Date()
                     , UserName: body.userName
                     , Disabled: 0
                 }))
             })
         }
-        if (body.pools.length > 0) {
-            let poolsId = []
-            for (let p of body.pools) {
-                let pool = await getData(wlServer, `/read/readOne/SwimmingPools?Name='${p}'`)
-                pool = pool.data[0].Id
-                poolsId.push(pool)
-            }
+        if (body.swimmingPools.length > 0) {
+            // let poolsId = []
+            // for (let p of body.pools) {
+            //     let pool = await getData(wlServer, `/read/readOne/SwimmingPools?Name='${p}'`)
+            //     pool = pool.data[0].Id
+            //     poolsId.push(pool)
+            // }
             await postData(wlServer, '/create/createMany', {
-                entity: 'PatientsPools', values: poolsId.map(p => ({
+                entity: 'PatientsPools', values: body.swimmingPools.map(p => ({
                     patientId: id
-                    , poolId: p
+                    , poolId: p.poolId
                     , addedDate: new Date()
                     , UserName: body.userName
                     , Disabled: 0
                 }))
             })
         }
-        if (body.treatmentLevels.length > 0) {
-            let treatmentLevelsId = []
-            for (let t of body.treatmentLevels) {
-                let treatment = await getData(wlServer, `/read/readOne/Levels?Name='${t}'`)
-                treatment = treatment.data[0].Id
-                treatmentLevelsId.push(treatment)
-            }
+        if (body.treatmentLevel.length > 0) {
+            // let treatmentLevelsId = []
+            // for (let t of body.treatmentLevels) {
+            //     let treatment = await getData(wlServer, `/read/readOne/Levels?Name='${t}'`)
+            //     treatment = treatment.data[0].Id
+            //     treatmentLevelsId.push(treatment)
+            // }
             await postData(wlServer, '/create/createMany', {
-                entity: 'PatientsTreatmentLevels', values: treatmentLevelsId.map(t => ({
+                entity: 'PatientsTreatmentLevels', values: body.treatmentLevel.map(t => ({
                     patientId: id
-                    , TreatmentLevelId: t
+                    , TreatmentLevelId: t.levelId
                     , addedDate: new Date()
                     , UserName: body.userName
                     , Disabled: 0
@@ -105,27 +105,27 @@ async function insertRestDetailes(body) {
             })
         }
         //(לא מאפשר null)disabledDate , DisabledUser:נדרש להכניס גם את  השדות  configכרגע לא עובד כיוון שב  
-        if (body.urgencyNumbers.length > 0) {
-            let urgencyNumbersId = []
-            for (let u of body.urgencyNumbers) {
-                switch (u) {
-                    case "נמוכה": {
-                        urgencyNumbersId.push(1)
-                        break
-                    }
-                    case "בינונית": {
-                        urgencyNumbersId.push(2)
-                        break
-                    }
-                    case "גבוהה": {
-                        urgencyNumbersId.push(3)
-                        break
-                    }
-                }
-            }
+        if (body.treatmentPreference.length > 0) {
+            // let urgencyNumbersId = []
+            // for (let u of body.urgencyNumbers) {
+            //     switch (u) {
+            //         case "נמוכה": {
+            //             urgencyNumbersId.push(1)
+            //             break
+            //         }
+            //         case "בינונית": {
+            //             urgencyNumbersId.push(2)
+            //             break
+            //         }
+            //         case "גבוהה": {
+            //             urgencyNumbersId.push(3)
+            //             break
+            //         }
+            //     }
+            // }
             await postData(wlServer, '/create/createMany', {
-                entity: 'PatientUrgency', values: urgencyNumbersId.map(u => ({
-                    UrgencyNumber: u
+                entity: 'PatientUrgency', values: body.treatmentPreference.map(u => ({
+                    UrgencyNumber: u.treatmentId
                     , PatientId: id
                     , AddedDate: new Date()
                     , UserName: body.userName

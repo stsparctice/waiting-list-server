@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const { deleteTeacher, insertTeacher, insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender,
-     getTeachersLevels,
-     getTeachersGenders,
-     getTeachersPools } = require('../modules/teachers')
+const { deleteTeacher, insertTeacher, insertPoolToTeacher, updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition, findAllDisabledTeachers, findTeacherByPoolAndGender, findGendersAndDaysByTeachers, findHouerByGenderAndDay } = require('../modules/teachers')
+const {  getTeachersLevels, getTeachersGenders, getTeachersPools } = require('../modules/teachers')
 const { httpLogger } = require('../services/logger/http-logger')
 
 // insert  //
@@ -186,4 +184,33 @@ router.post('/findTeacherByPoolAndGender', express.json(), async (req, res) => {
     }
 })
 
+router.post('/findGendersAndDaysByTeachers', express.json(), async (req, res) => {
+    try {
+        console.log(req.body,'rrrrrrrrrrrrrrr');
+        const ans = await findGendersAndDaysByTeachers(req.body)
+        console.log(ans, 'ans');
+        if (ans)
+            res.status(201).send(ans)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
+
+router.post('/findHouersByGenderAndDay', express.json(), async (req, res) => {
+    try {
+        console.log(req.body,'rrrrrrrrrrrrrrr');
+        const ans = await findHouerByGenderAndDay(req.body.condition)
+        console.log(ans, 'ans');
+        if (ans)
+            res.status(201).send(ans)
+        else
+            res.status(500).send({ message: 'not found' })
+    }
+    catch (error) {
+        res.status(500).send(error.message)
+    }
+})
 module.exports = router

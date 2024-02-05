@@ -86,8 +86,12 @@ async function updateTeacher(obj) {
                 throw new Error("the name exists in db")
             }
         }
-        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
-        return ans
+        // const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
+        const ans1 = await postData(wlServer, '/create/createMany', { entity: 'teachersGenders',  values: obj.teachersGenders.map(g=>({teacherId:obj.id,genderId:g.id, AddedDate: new Date, username: 'develop', disabled: 0 }))})
+        const ans2 = await postData(wlServer, '/create/createMany', { entity: 'teachersLevels',  values: obj.teachersLevels.map(l=>({teacherId:obj.id,levelId:l.id, AddedDate: new Date, username: 'develop', disabled: 0 })) })
+        const ans3 = await postData(wlServer, '/create/createMany', { entity: 'teachersPools',  values: obj.teachersPools.map(p=>({teacherId:obj.id,poolId:p.id, AddedDate: new Date, username: 'develop', disabled: 0 }))})
+        console.log(ans1,'ans1',ans2,'ans2',ans3,'ans3');
+        return ans1
     }
     else {
         throw new Error('teacher does not exist')
@@ -203,7 +207,7 @@ async function getTeachersGenders(teacherId) {
                 const levels = data.map(({ teacherId, ...rest }) => rest)
                 return levels
             }
-            
+
         }
     }
     catch (error) {
@@ -220,7 +224,7 @@ async function getTeachersPools(teacherId) {
                 const levels = data.map(({ teacherId, ...rest }) => rest)
                 return levels
             }
-            
+
         }
     }
     catch (error) {
@@ -242,17 +246,49 @@ async function findByLevel(teacher, levelId) {
     }
     return "data does not exist"
 }
-module.exports = {
-    findTeacherByPoolAndGender,
-    insertTeacher,
-    insertPoolToTeacher,
-    deleteTeacher,
-    updateTeacher,
-    findOneTeacher,
-    findAllTeachers,
-    findTeacherByCondition,
-    findAllDisabledTeachers,
-    getTeachersLevels,
-    getTeachersGenders,
-    getTeachersPools
+async function findGendersAndDaysByTeachers(id) {
+    try {
+        console.log(id, 'id33333');
+        const gender = await postData(wlServer, '/read/readMany/teachersGenders', { condition: { teacherId: id.id } })
+        console.log(gender.data, 'gender');
+        let ids = gender.data.map(g =>
+            g.genderId.id
+        )
+        console.log(ids, 'ids');
+        const days = []
+        for (let i = 0; i < ids.length; i++) {
+            let day = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition: { genderId: ids[i] } })
+            days.push(day.data[0])
+        }
+        console.log(days.data, 'days');
+        if (days)
+            return days
+        else
+            return "not found!"
+    }
+    catch (error) {
+        throw error
+    }
 }
+
+
+async function findHouerByGenderAndDay(condition) {
+    try {
+        console.log(condition, ('genderId, day'));
+        const ans = await postData(wlServer, '/read/readMany/poolDaySchedule', { condition })
+        console.log(ans, 'ans');
+        if (ans.data)
+            return ans.data
+        else
+            return 'not found'
+    }
+    catch (error) {
+        throw error
+    }
+}
+
+
+module.exports = { findHouerByGenderAndDay, findGendersAndDaysByTeachers,
+     findTeacherByPoolAndGender, insertTeacher, insertPoolToTeacher, deleteTeacher,
+      updateTeacher, findOneTeacher, findAllTeachers, findTeacherByCondition,
+       findAllDisabledTeachers, getTeachersGenders, getTeachersLevels, getTeachersPools}

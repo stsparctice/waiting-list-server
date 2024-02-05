@@ -1,5 +1,4 @@
 require('dotenv').config()
-const { MONGO_TEACHERSCHEDULE_COLLECTION } = process.env;
 const { postData } = require('../services/axios');
 const { wlServer } = require('../services/servers')
 
@@ -25,7 +24,7 @@ async function insertTeacherSchedule(obj) {
             ]})
             console.log({schedule});
             if (!schedule.data[0]) {
-                const ans = await postData(wlServer, '/create/insert', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, ...obj })
+                const ans = await postData(wlServer, '/create/createOne', { entity: 'teacherSchedule',condition:{ ...obj }})
                 return ans.data;
             }
         }
@@ -51,7 +50,7 @@ insertPoolDaySchedule
 // delete
 async function deleteTeacherSchedule(id) {
     try {
-        const ans = await postData(wlServer, '/crud_db/delete', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { name: id } })
+        const ans = await postData(wlServer, '/delete/deleteOne', { entity: 'teacherSchedule', condition: { name: id } })
     }
     catch (error) {
         throw error
@@ -63,7 +62,7 @@ async function updateTeacherSchedule(name, update) {
     try {
         name = await findTeacherScheduleByTeacherName(name)
         if (name) {
-            ans = await postData(wlServer, '/crud_db/update', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { name: name }, update: { "$set": { ...update } } })
+            ans = await postData(wlServer, '/update/updateOne', { entity: 'teacherSchedule', condition: { name: name }, update })
             return ans.data;
 
         }
@@ -78,7 +77,7 @@ async function updateTeacherSchedule(name, update) {
 // read 
 async function findTeachersSchedule(obj) {
     try {
-        const ans = await postData(wlServer, '/crud_db/read', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { ...obj } })
+        const ans = await postData(wlServer, '/read/readMany/teacherSchedule', { condition: { ...obj } })
         return ans.data;
     }
     catch (error) {
@@ -88,9 +87,10 @@ async function findTeachersSchedule(obj) {
 
 async function findTeacherScheduleToSpecificTeacher(name) {
     try {
-        name = await findTeacherScheduleByTeacherName(name)
-        if (name) {
-            ans = await postData(wlServer, '/crud_db/read', { entity: MONGO_TEACHERSCHEDULE_COLLECTION, filter: { name: name } })
+        const teacher = await findTeacherScheduleByTeacherName(name)
+        if (teacher.id) {
+            const ans = await postData(wlServer, '/read/readMany/teacherSchedule', {  condition: { id: teacher.id } })
+            console.log({ans});
             return ans.data;
         }
         return "the name is not exist"
@@ -102,7 +102,7 @@ async function findTeacherScheduleToSpecificTeacher(name) {
 
 async function findTeacherScheduleByTeacherName(name) {
     try {
-        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { techerName: name, disabled: 0 } })
+        const ans = await postData(wlServer, '/read/readMany/teachers', { condition: { teacherName: name, disabled: 0 } })
         console.log("ans", ans.data);
         if (ans.data[0]) {
             return ans.data[0]
