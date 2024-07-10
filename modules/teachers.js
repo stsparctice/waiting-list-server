@@ -33,7 +33,7 @@ async function insertTeacher(obj) {
         else {
 
             const newTeacher = { ...obj, addedDate: new Date(), userName: 'develop', disabled: 0 }
-            const ans = await postData(wlServer, '/create/createTran', { entity: 'teachers', values: newTeacher })
+            const ans = await postData(wlServer, '/create/createOne', { entity: 'teachers', values: newTeacher })
             if (ans.status === 201) {
                 const result = { id: ans.data.result, ...newTeacher }
                 return result;
@@ -86,12 +86,8 @@ async function updateTeacher(obj) {
                 throw new Error("the name exists in db")
             }
         }
-        // const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
-        const ans1 = await postData(wlServer, '/create/createMany', { entity: 'teachersGenders',  values: obj.teachersGenders.map(g=>({teacherId:obj.id,genderId:g.id, AddedDate: new Date, username: 'develop', disabled: 0 }))})
-        const ans2 = await postData(wlServer, '/create/createMany', { entity: 'teachersLevels',  values: obj.teachersLevels.map(l=>({teacherId:obj.id,levelId:l.id, AddedDate: new Date, username: 'develop', disabled: 0 })) })
-        const ans3 = await postData(wlServer, '/create/createMany', { entity: 'teachersPools',  values: obj.teachersPools.map(p=>({teacherId:obj.id,poolId:p.id, AddedDate: new Date, username: 'develop', disabled: 0 }))})
-        console.log(ans1,'ans1',ans2,'ans2',ans3,'ans3');
-        return ans1
+        const ans = await postData(wlServer, '/update/updateOne', { entity: 'teachers', data: obj, condition: { id: obj.id } })
+        return ans
     }
     else {
         throw new Error('teacher does not exist')

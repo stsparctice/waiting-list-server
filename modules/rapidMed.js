@@ -47,11 +47,8 @@ async function readDetails(id) {
             ]
         })
         const { data } = patient
-        console.log({ data })
         const { birthdate } = data
-        console.log(birthdate)
         const ans = checkDate(birthdate)
-        console.log({ ans })
         data.birthdate = ans
         if (data[patientType.NAME] && data[patientType.FAMILY_NAME] && data[patientType.BIRTHDATE] != 'no date')
             return data

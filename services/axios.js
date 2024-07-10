@@ -22,7 +22,8 @@ const postData = async (server, url, body) => {
     console.log({body, url})
     try {
        let response = await server.post(url, body);
-       console.log({response})
+       const {status, data} = response
+       console.log({status,data})
         return response;
     }
 

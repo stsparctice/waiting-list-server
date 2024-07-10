@@ -130,9 +130,10 @@ router.post('/addGenderHour', express.json(), async (req, res) => {
 router.post('/update', express.json(), async (req, res) => {
     try {
         const ans = await updateOneSchedule(req.body)
-        res.status(200).send(ans.data)
+        res.status(200).send(ans)
     }
     catch (error) {
+        console.log({error});
         res.status(404).send(error)
     }
 })
@@ -150,7 +151,7 @@ router.post('/updateHourByDay', express.json(), async (req, res) => {
 
 
 //בקשה למחיקת יום פעילות בריכה (מקבלת בריכה,יום)
-router.post('/deleteDay', express.json(), async (req, res) => {
+router.post('/delete', express.json(), async (req, res) => {
     try {
         const ans = await deleteDay(req.body)
         res.status(200).send(ans.data)
