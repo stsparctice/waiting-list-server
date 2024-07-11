@@ -129,6 +129,7 @@ async function getHour(obj, arr) {
 async function deleteDay(obj) {
     const { id } = obj
     condition = { id }
+    
     try {
         let ans = await postData(wlServer, '/delete/deleteOne', { entity: 'poolDaySchedule', data: obj, condition })
         return ans.data
